@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { spriteMap } from './sprite_map';
-import { menuNavItems } from './menu_map';
+import { menuNavItems } from './menu_icon_map';
 
 import { randomInt } from '../helper';
 
@@ -74,7 +74,7 @@ ngOnInit() : void {
   let movesFrameDrawn = 0;
   let destX = CANVAS_WIDTH/3.25;
 
- // draw different shapes
+ // Used to animate the sprites
   function animate() 
   {
     clearCanvas(ctx);
@@ -151,7 +151,7 @@ function redrawMenuIcons() {
 
   menuNavItems.forEach(e => {
     let srcY = e.isTop ? 0 : menu_icon_size;
-    ctx?.drawImage(navSpritesheet, 
+    navCtx?.drawImage(navSpritesheet, 
       e.position * menu_icon_size,  // srcX
       !e.isActive ? srcY : (menu_icon_size*2)+srcY, // srcY
       menu_icon_size, 
@@ -178,11 +178,17 @@ function redrawMenuIcons() {
     // if no menu open, cycle through menu options
     if(noMenu) {
       let index = menuNavItems.map(e => e.isActive).indexOf(true);
+      menuNavItems[index].isActive = false;
+
+      // resets index if reach end of icons
       if(index === menuNavItems.length) {
         index = -1;
       }
+
+      // sets new icon to be highlighted
+      menuNavItems[index++].isActive = true;
+
       //redrawMenuIcons()
-      index++;
     } else {
       // go through options in menu / play game
     }
