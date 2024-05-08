@@ -1,1 +1,98 @@
 /* You can add global styles to this file, and also import other style files */
+.tamagotchi {
+    position: relative;
+    height: 11px;
+    &:before {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 11px;
+        top: 50%;
+        left: 0;
+        margin-top: -5px;
+        background-image: image-url("assests/tamagotchi_sprites.png");
+        background-repeat: no-repeat;
+    }
+}
+
+$tamagotchis: egg shirobabytchi tonmarutchi tongaritchi hashitamatchi mimitchi pochitchi zuccitchi hashizoutchi kusatchi takotchi specialboy;
+
+@mixin tama-sprite($offset) {
+    $offset: $offset - 1;
+    &:before {
+        background-position: 16px*-$offset top;
+    }
+}
+
+@for $i from 1 through length($tamagotchis) {
+    $tamagotchi: nth($tamagotchis, $i);
+    .tamagotchi-#{$tamagotchi} {
+        @include tama-sprite($i)
+    }
+}
+.tama-shell {
+    height:910px;
+    width: 638px;
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);   
+    background-image: url("assets/background-skin.png"); 
+    background-position: -160px 121px;
+    background-repeat:no-repeat;
+}
+.tama-nav-menu {
+    height:314px;
+    width: 330px;
+    position: absolute;
+    top:59%;
+    left: 50%;
+    transform: translate(-50%,-50%);    
+    border-radius:25px;
+    background-image: url("assets/background.png"); 
+   // background-repeat:no-repeat;
+}
+.tama-screen {
+    height:314px;
+    width: 330px;
+    position: absolute;
+    top:59%;
+    left: 50%;
+    transform: translate(-50%,-50%);    
+   border-radius:25px;
+}
+
+.tama-button {
+    height:65px;
+    width: 65px;
+    position: absolute;
+    transform: translate(-50%,-50%);   
+    background: url("assets/background-skin.png"); 
+    background-position: -19px -5px;
+    border: none;
+}
+
+.tama-button:hover {
+    @extend .tama-button; 
+    background-position: -89px -5px;
+    border: none;
+    cursor:pointer;
+}
+
+.tama-button-1{
+    @extend .tama-button;
+    top:85%;
+    left: 30%;
+}
+
+.tama-button-2{
+    @extend .tama-button;
+    top:90%;
+    left: 50%;
+}
+
+.tama-button-3 {
+    @extend .tama-button;
+    top:85%;
+    left: 70%;
+}
