@@ -16,10 +16,9 @@ import { randomInt } from '../helper';
 
 export class AppComponent {
 	title = 'tamagotchi';
-	private menu: MenuComponent;
-	constructor() {
-		this.menu = new MenuComponent();
-	}
+	@ViewChild('menu') menu!: MenuComponent;
+
+	constructor() { }
 
 	// BUTTON A Actions
 	selectMenu() {

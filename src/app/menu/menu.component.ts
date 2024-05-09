@@ -12,18 +12,19 @@ import { CANVAS_SIZE } from '../../helper';
 export class MenuComponent implements OnInit {
 
 	@ViewChild('canvas_nav', {static: true}) navCanvas! : ElementRef; 
-	canvas_menu:HTMLCanvasElement | null = null;
-	ctx_menu: CanvasRenderingContext2D | null = null;
+	canvas_menu:HTMLCanvasElement | null;
+	ctx_menu: CanvasRenderingContext2D | null;
 	private navSpritesheet:HTMLImageElement = new Image();
 
 	menu_icon_size = 21; // size of icon on sprite
 	menu_icon_scale_size = 30; // used to scale icon size
 
-	constructor() {  } // service to populate icon object?
+	constructor() {  
+		this.canvas_menu = null;
+		this.ctx_menu = null;
+	} // service to populate icon object?
 		
 	ngOnInit() : void {
-		const self = this
-
 		this.canvas_menu = this.navCanvas.nativeElement;
 		this.canvas_menu!.width = CANVAS_SIZE.WIDTH;
 		this.canvas_menu!.height = CANVAS_SIZE.HEIGHT;
@@ -31,9 +32,12 @@ export class MenuComponent implements OnInit {
 		this.ctx_menu = this.canvas_menu!.getContext('2d');
 		
 		this.navSpritesheet.src = 'assets/menu-icons.svg'
-	 	this.navSpritesheet.onload = function () {
-			self.redrawMenuIcons();
-		} 
+	 	this.navSpritesheet.onload = () => {
+			this.redrawMenuIcons();
+		}
+
+
+		
 
 		
 	} // end of OnInit
