@@ -16,28 +16,35 @@ import { randomInt } from '../helper';
 
 export class AppComponent {
 	title = 'tamagotchi';
+	private menu: MenuComponent;
+	constructor() {
+		this.menu = new MenuComponent();
+	}
 
 	// BUTTON A Actions
 	selectMenu() {
 		// cycle through menu options
-		alert("select")
+		//alert("select")
 		// Get current open menu 
 
 		let noMenu = true;
 		// if no menu open, cycle through menu options
 		if(noMenu) {
 			let index = menuNavItems.map(e => e.isActive).indexOf(true);
-			menuNavItems[index].isActive = false;
+			
+			if(index > -1) menuNavItems[index].isActive = false;
+
+			index++;
 
 			// resets index if reach end of icons
 			if(index === menuNavItems.length) {
-				index = -1;
+				index = 0;
 			}
 
 			// sets new icon to be highlighted
-			menuNavItems[index++].isActive = true;
+			menuNavItems[index].isActive = true;
 
-			//MenuComponent.redrawMenuIcons()
+			this.menu.redrawMenuIcons()
 		} else {
 			// go through options in menu / play game
 		}
