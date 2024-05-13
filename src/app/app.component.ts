@@ -54,7 +54,6 @@ export class AppComponent {
 
 	confirmMenu() {
 		// confirm / execute action
-		
 		if(this.currentMenu === null) { // If noMenu, trigger action or open menu for selected icon
 			this.currentMenu = menuList[this.activeIdx]
 
@@ -75,6 +74,7 @@ export class AppComponent {
 		if(this.currentMenu !== null) {
 			this.screen.clearCanvasStopAnimation();
 			this.currentMenu = null;
+			this.screen.drawScreenAnimation(); // reshow tamagotchi
 		} else {
 			this.menu.clearMenuIcons();
 		}

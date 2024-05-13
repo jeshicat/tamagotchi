@@ -57,11 +57,8 @@ export class ScreenComponent implements OnInit {
 	
 		// // status frame counter
 		// this.status_currentFrame = 0;
-
-		const spriteData = spriteMap[this.tName]
-		const animation = spriteData.actions[this.action];
 		
-		this.animate(animation, spriteData.spriteWidth, spriteData.spriteHeight, this.destX);
+		this.drawScreenAnimation();
 	} // end of OnInit
 
 	// Used to animate the sprites
@@ -135,6 +132,15 @@ export class ScreenComponent implements OnInit {
 			clearCanvas(this.ctx);
 			//this.ctx = null
 			cancelAnimationFrame(this.animRequestID)
+
+			// reset frame values
+			this.animRequestID = 0;
+			this.currentFrame = 0;
+			this.framesDrawn = 0;
+			this.frameLimit = 60;
+			this.movesFrameDrawn = 0;
+			this.destX = CANVAS_SIZE.WIDTH/3.25;
+			this.status_currentFrame = 0;
 		}
 
 		// Draws menu based on params from app.component
@@ -147,9 +153,16 @@ export class ScreenComponent implements OnInit {
 					x.spriteHeight, 
 					x.destX, 
 					x.destY, 
-					x.spriteWidth, 
-					x.spriteHeight);
+					x.destWidth, 
+					x.destHeight);
 			})
+		}
+
+		drawScreenAnimation() {
+			const spriteData = spriteMap[this.tName]
+			const animation = spriteData.actions[this.action];
+
+			this.animate(animation, spriteData.spriteWidth, spriteData.spriteHeight, this.destX);
 		}
 		
 	} 

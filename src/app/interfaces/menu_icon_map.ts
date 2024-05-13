@@ -1,3 +1,5 @@
+import { CANVAS_SIZE } from "../../helper";
+
 // Top 4 and bottom 4 nav icons
 interface menuNavItem {
     id: string,
@@ -105,40 +107,39 @@ export const menuList: menu[] = [
     { // Feed
         id: 0, 
         screens: [{
-            drawItems: [{srcX: 0, 
+            drawItems: [
+            { // MEAL
+                srcX: 530, 
+                srcY: 200,
+                spriteWidth: 180,
+                spriteHeight: 64,
+                destX: 107,
+                destY: 55,
+                destWidth: 180*1.2,
+                destHeight: 64*1.2
+            }, { // SNACK
+                srcX: 330, 
+                srcY: 200,
+                spriteWidth: 200,
+                spriteHeight: 64,
+                destX: 107,
+                destY: 145,
+                destWidth: 180*1.2,
+                destHeight: 64*1.2
+            } ,{ // ARROW UP
+                srcX: 850, 
                 srcY: 0,
                 spriteWidth: 64,
                 spriteHeight: 64,
-                destX: 0,
-                destY: 100,
-                destWidth: 64,
-                destHeight: 64},
-                {srcX: 64, 
-                    srcY: 0,
-                    spriteWidth: 64,
-                    spriteHeight: 64,
-                    destX: 0,
-                    destY: 100,
-                    destWidth: 64,
-                    destHeight: 64},
-                    {srcX: 128, 
-                        srcY: 0,
-                        spriteWidth: 64,
-                        spriteHeight: 64,
-                        destX: 0,
-                        destY: 100,
-                        destWidth: 64,
-                        destHeight: 64},
-                        {srcX: 256, 
-                            srcY: 0,
-                            spriteWidth: 64,
-                            spriteHeight: 65,
-                            destX: 0,
-                            destY: 100,
-                            destWidth: 64,
-                            destHeight: 64}], // MEAL / SNACK
+                destX: 5,
+                destY: 60,
+                destWidth: 64*1.2,
+                destHeight: 64*1.2
+            }], 
+            // MEAL / SNACK
             buttonA: () => {
                 // Move arrow between Meal and Snack
+              //  menuList[0].screens[0].drawItems
             },
             buttonB: () => {
                 // Clear canvas
