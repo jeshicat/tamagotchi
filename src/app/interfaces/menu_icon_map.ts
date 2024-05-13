@@ -9,21 +9,21 @@ interface menuNavItem {
 }
 
 // Menus shown when icons pressed
-interface menu {
+export interface menu {
     id: number,
     screens: spriteMenuData[], // array of screens in menu + their actions
 }
 
 // buttonA, buttonB, buttonC > function that happens when button pressed
 interface spriteMenuData {    
-    drawItems: contextParams[] // what to draw on the canvas
+    drawItems: menuContextParams[] // what to draw on the canvas
     callback?: Function, // play to generate random num, medicine, bath
     buttonA: Function, // select button click
     buttonB: Function, // confirm button click
     buttonC: Function  // cancel button click
 }
 
-interface contextParams {
+export interface menuContextParams {
     srcX: number, 
     srcY: number,
     spriteWidth: number,

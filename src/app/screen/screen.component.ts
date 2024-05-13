@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { spriteMap, spriteData, spriteFrameDetails } from './sprite_map';
-import { CANVAS_SIZE, randomInt } from '../../helper';
+import { spriteMap, spriteData, spriteFrameDetails } from '../interfaces/sprite_map';
+import { menuContextParams } from '../interfaces/menu_icon_map';
+import { CANVAS_SIZE, clearCanvas, randomInt } from '../../helper';
 import { TamagotchiService as TService } from '../tamagotchi.service';
 
 @Component({
@@ -10,8 +11,8 @@ import { TamagotchiService as TService } from '../tamagotchi.service';
 	templateUrl: './screen.component.html',
 	styleUrl: './screen.component.scss'
 })
+
 export class ScreenComponent implements OnInit {
- 
 	@ViewChild('canvas', {static: true}) screenCanvas! : ElementRef; // screen with tamagotchi + animations
 	private spritesheet:HTMLImageElement = new Image();
 	canvas: HTMLCanvasElement | null;
@@ -19,6 +20,8 @@ export class ScreenComponent implements OnInit {
 
 	CANVAS_MIDDLE = CANVAS_SIZE.WIDTH / 3.25
 	CANVAS_RIGHT = CANVAS_SIZE.WIDTH / 1.3
+
+	animRequestID: number = 0;
 
 	// TODO CHANGE TO USE SERVICE CLASS
 	tName = "shirobabytchi";
@@ -43,11 +46,10 @@ export class ScreenComponent implements OnInit {
 		this.spritesheet.src = 'assets/tamagotchi_spritesheet.png'
 
 		this.canvas = this.screenCanvas.nativeElement;
-		this.ctx = this.canvas!.getContext('2d');
-
 		this.canvas!.width = CANVAS_SIZE.WIDTH;
 		this.canvas!.height = CANVAS_SIZE.HEIGHT;
 
+		this.initContext();
 
 		// this.currentFrame = 0;
 		// this.framesDrawn = 0; // records # of times the 'animate' function has been called
@@ -64,8 +66,8 @@ export class ScreenComponent implements OnInit {
 
 	// Used to animate the sprites
 	animate(animation: spriteFrameDetails, spriteWidth: number, spriteHeight:number, destX: number) {
-		this.ctx?.clearRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
-		requestAnimationFrame(() => {this.animate(animation, spriteWidth, spriteHeight, destX)});
+		clearCanvas(this.ctx);
+		this.animRequestID = requestAnimationFrame(() => {this.animate(animation, spriteWidth, spriteHeight, destX)});
 
 			this.currentFrame = this.currentFrame % animation.frames.length;
 			let srcX = animation.frames[this.currentFrame].x;
@@ -123,7 +125,31 @@ export class ScreenComponent implements OnInit {
 					this.framesDrawn = 0;
 					//frameLimit = getNewFrameLimit();
 				}
+		} // end of animate
+
+		initContext() {
+			this.ctx = this.canvas!.getContext('2d');
 		}
 
+		clearCanvasStopAnimation() {
+			clearCanvas(this.ctx);
+			//this.ctx = null
+			cancelAnimationFrame(this.animRequestID)
+		}
+
+		// Draws menu based on params from app.component
+		drawMenu(menuSprites: menuContextParams[]) {
+			menuSprites.forEach(x => {
+				this.ctx?.drawImage(this.spritesheet, 
+					x.srcX, 
+					x.srcY, 
+					x.spriteWidth, 
+					x.spriteHeight, 
+					x.destX, 
+					x.destY, 
+					x.spriteWidth, 
+					x.spriteHeight);
+			})
+		}
 		
-	}
+	} 

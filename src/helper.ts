@@ -9,3 +9,7 @@ export function randomInt(min:number, max:number) { // min and max included
 export function getNewFrameLimit() { 
   return randomInt(1,3)*30;
 }
+
+export function clearCanvas(ctx: CanvasRenderingContext2D | null) {
+  ctx?.clearRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
+}

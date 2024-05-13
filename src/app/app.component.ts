@@ -2,9 +2,9 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MenuComponent } from './menu/menu.component';
 import { ScreenComponent } from './screen/screen.component';
-import { menuNavItems } from './menu_icon_map';
+import { menuList, menuNavItems, menu } from './interfaces/menu_icon_map';
 
-import { randomInt } from '../helper';
+import { clearCanvas, randomInt } from '../helper';
 
 @Component({
 	selector: 'app-root',
@@ -17,6 +17,10 @@ import { randomInt } from '../helper';
 export class AppComponent {
 	title = 'tamagotchi';
 	@ViewChild('menu') menu!: MenuComponent;
+	@ViewChild('screen') screen!: ScreenComponent;
+	
+	activeIdx:number = -1; // which icon is selected on nav menu
+	currentMenu: menu | null = null; // currently opened menu
 
 	constructor() { }
 
@@ -26,22 +30,21 @@ export class AppComponent {
 		//alert("select")
 		// Get current open menu 
 
-		let noMenu = true;
 		// if no menu open, cycle through menu options
-		if(noMenu) {
-			let index = menuNavItems.map(e => e.isActive).indexOf(true);
+		if(this.currentMenu === null) {
+			this.activeIdx = this.menu.getActiveMenuIdx();
 			
-			if(index > -1) menuNavItems[index].isActive = false;
+			if(this.activeIdx > -1) menuNavItems[this.activeIdx].isActive = false;
 
-			index++;
+			this.activeIdx++;
 
 			// resets index if reach end of icons
-			if(index === menuNavItems.length) {
-				index = 0;
+			if(this.activeIdx === menuNavItems.length) {
+				this.activeIdx = 0;
 			}
 
 			// sets new icon to be highlighted
-			menuNavItems[index].isActive = true;
+			menuNavItems[this.activeIdx].isActive = true;
 
 			this.menu.redrawMenuIcons()
 		} else {
@@ -51,11 +54,30 @@ export class AppComponent {
 
 	confirmMenu() {
 		// confirm / execute action
-		alert("confirm")
+		
+		if(this.currentMenu === null) { // If noMenu, trigger action or open menu for selected icon
+			this.currentMenu = menuList[this.activeIdx]
+
+			// clear screen canvas and stop animation
+			this.screen.clearCanvasStopAnimation()
+			
+			// draw menu frames
+			this.currentMenu!.screens[0].drawItems.forEach(e => {
+			this.screen.drawMenu(this.currentMenu!.screens[0].drawItems)
+			});
+		} else { // do actionB from menu object
+
+		}
 	}
 
 	cancelMenu() {
 		// back to main menu / cancel
-		alert("cancel")
+		if(this.currentMenu !== null) {
+			this.screen.clearCanvasStopAnimation();
+			this.currentMenu = null;
+		} else {
+			this.menu.clearMenuIcons();
+		}
 	}
+
 }

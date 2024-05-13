@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { menuNavItems } from '../menu_icon_map';
-import { CANVAS_SIZE } from '../../helper';
+import { menuNavItems } from '../interfaces/menu_icon_map';
+import { CANVAS_SIZE, clearCanvas } from '../../helper';
 
 @Component({
 	selector: 'app-menu',
@@ -39,24 +39,33 @@ export class MenuComponent implements OnInit {
 
 	// Redraw menu icons with all unactive
 	redrawMenuIcons() {
-		this.ctx_menu!.clearRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
+		clearCanvas(this.ctx_menu)
 
-			menuNavItems.forEach(e => {
-				let srcY = e.isTop ? 0 : this.menu_icon_size;
-				
-				this.ctx_menu!.drawImage(
-					this.navSpritesheet, 
-					e.position * this.menu_icon_size,  // srcX
-					e.isActive ? (this.menu_icon_size*2)+srcY : srcY, // srcY
-					this.menu_icon_size, 
-					this.menu_icon_size, 
-					e.destX,  // destX 
-					e.destY,  // destY 
-					this.menu_icon_scale_size, 
-					this.menu_icon_scale_size
-				);    
-			});
-		}
+		menuNavItems.forEach(e => {
+			let srcY = e.isTop ? 0 : this.menu_icon_size;
+			
+			this.ctx_menu!.drawImage(
+				this.navSpritesheet, 
+				e.position * this.menu_icon_size,  // srcX
+				e.isActive ? (this.menu_icon_size*2)+srcY : srcY, // srcY
+				this.menu_icon_size, 
+				this.menu_icon_size, 
+				e.destX,  // destX 
+				e.destY,  // destY 
+				this.menu_icon_scale_size, 
+				this.menu_icon_scale_size
+			);    
+		});
+	}
+
+	getActiveMenuIdx() {
+		return menuNavItems.map(e => e.isActive).indexOf(true);
+	}
+
+	clearMenuIcons() {
+		menuNavItems[this.getActiveMenuIdx()].isActive = false;
+		this.redrawMenuIcons();
+	}
 		
 } // end of class MenuComponent
 
