@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { spriteMap } from './sprite_map';
+import { spriteMap, spriteData, spriteFrameDetails } from './sprite_map';
 import { CANVAS_SIZE, randomInt } from '../../helper';
+import { TamagotchiService as TService } from '../tamagotchi.service';
 
 @Component({
 	selector: 'app-screen',
@@ -16,6 +17,19 @@ export class ScreenComponent implements OnInit {
 	canvas: HTMLCanvasElement | null;
 	ctx: CanvasRenderingContext2D | null;
 
+	CANVAS_MIDDLE = CANVAS_SIZE.WIDTH / 3.25
+	CANVAS_RIGHT = CANVAS_SIZE.WIDTH / 1.3
+
+	currentFrame = 0;
+	framesDrawn = 0; // records # of times the 'animate' function has been called
+	frameLimit = 60; // frame limit should be 30, 60 or 90
+	
+	// Variables used for x axis movement of sprite
+	movesFrameDrawn = 0;
+	destX = CANVAS_SIZE.WIDTH/3.25;
+
+	status_currentFrame = 0; // "status" frame counter
+
 	constructor() {
 		this.canvas = null;
 		this.ctx = null;
@@ -29,37 +43,35 @@ export class ScreenComponent implements OnInit {
 
 		this.canvas!.width = CANVAS_SIZE.WIDTH;
 		this.canvas!.height = CANVAS_SIZE.HEIGHT;
-		const CANVAS_MIDDLE = CANVAS_SIZE.WIDTH / 3.25
-		const CANVAS_RIGHT = CANVAS_SIZE.WIDTH / 1.3
-
+	
+		// TODO CHANGE TO USE SERVICE CLASS
 		let tName = "shirobabytchi";
 		let action = "main"
 
 		const animation = spriteMap[tName].actions[action];
 		const spriteWidth = spriteMap[tName].spriteWidth;
 		const spriteHeight = spriteMap[tName].spriteHeight;
-		const frames = animation.frames
 		
-		let currentFrame = 0;
-		let framesDrawn = 0; // records # of times the 'animate' function has been called
-		let frameLimit = 60; // frame limit should be 30, 60 or 90
+		this.currentFrame = 0;
+		this.framesDrawn = 0; // records # of times the 'animate' function has been called
+		this.frameLimit = 60; // frame limit should be 30, 60 or 90
 	
 		// status frame counter
-		let currentStatusFrame = 0;
+		this.status_currentFrame = 0;
 
-		// Variables used for x axis movement of sprite
-		let movesFrameDrawn = 0;
-		let destX = CANVAS_SIZE.WIDTH/3.25;
+		
+		
+		this.animate(animation, spriteWidth, spriteHeight, this.destX);
+	} // OnInit
 
 	// Used to animate the sprites
-		const animate = () => 
-		{
-			this.ctx?.clearRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
-			requestAnimationFrame(animate);
+	animate(animation: spriteFrameDetails, spriteWidth: number, spriteHeight:number, destX: number) {
+		this.ctx?.clearRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
+		requestAnimationFrame(() => {this.animate(animation, spriteWidth, spriteHeight, destX)});
 
-			currentFrame = currentFrame % animation.frames.length;
-			let srcX = animation.frames[currentFrame].x;
-			let srcY = animation.frames[currentFrame].y;
+			this.currentFrame = this.currentFrame % animation.frames.length;
+			let srcX = animation.frames[this.currentFrame].x;
+			let srcY = animation.frames[this.currentFrame].y;
 
 			// ctx?.drawImage(tamaImage, srcX, srcY, srcW, srcH, destX, destY, destW, destH);
 			this.ctx?.drawImage(this.spritesheet, 
@@ -68,34 +80,34 @@ export class ScreenComponent implements OnInit {
 				spriteWidth, 
 				spriteHeight, 
 				destX, 
-				CANVAS_MIDDLE, 
+				this.CANVAS_MIDDLE, 
 				spriteWidth, 
 				spriteHeight);
 		
 			// status frames you show on upper right side of tama sprite
 			if(animation.frames_status) {
 
-				currentStatusFrame = currentStatusFrame % animation.frames_status.length;
-				let srcX2  = animation.frames_status[currentStatusFrame].x;
-				let srcY2  = animation.frames_status[currentStatusFrame].y;
+				this.status_currentFrame = this.status_currentFrame % animation.frames_status.length;
+				let srcX2  = animation.frames_status[this.status_currentFrame].x;
+				let srcY2  = animation.frames_status[this.status_currentFrame].y;
 
 				this.ctx?.drawImage(this.spritesheet, 
 					srcX2, 
 					srcY2, 
 					64, 
 					64, 
-					CANVAS_RIGHT, 
+					this.CANVAS_RIGHT, 
 					80, 
 					64, 
 					64);
 			}
 
-			framesDrawn++;
-			movesFrameDrawn++;
+			this.framesDrawn++;
+			this.movesFrameDrawn++;
 
 			// WHERE TO MOVE CURRENT SPRITE FRAME ALONG X AXIS
-			if(animation.drift && movesFrameDrawn >= 30) {
-				movesFrameDrawn = 0;
+			if(animation.drift && this.movesFrameDrawn >= 30) {
+				this.movesFrameDrawn = 0;
 				destX = destX + (randomInt(-1, 1) * 20)
 
 				// Make sure sprite doesn't leave canvas
@@ -107,14 +119,13 @@ export class ScreenComponent implements OnInit {
 			}
 
 			// WHICH SPRITE FRAME TO SHOW
-			if(framesDrawn >= frameLimit) {
-					currentFrame++;
-					currentStatusFrame++;
-					framesDrawn = 0;
+			if(this.framesDrawn >= this.frameLimit) {
+					this.currentFrame++;
+					this.status_currentFrame++;
+					this.framesDrawn = 0;
 					//frameLimit = getNewFrameLimit();
 				}
 		}
 
-		animate();
+		
 	}
-}

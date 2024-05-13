@@ -1,15 +1,17 @@
-interface spriteData {
+export interface spriteData {
 	[name: string]: {
 		spriteWidth: number;
 		spriteHeight: number;
 		actions: {
-			[type: string]: {
-				frames: frameCoordinate[];
-				frames_status?: frameCoordinate[];
-				drift: boolean;
-			};
+			[type: string]: spriteFrameDetails;
 		};
 	}
+}
+
+export interface spriteFrameDetails {
+	frames: frameCoordinate[];
+	frames_status?: frameCoordinate[];
+	drift: boolean;
 }
 
 interface frameCoordinate {
