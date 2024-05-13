@@ -52,9 +52,12 @@ export class AppComponent {
 		}
 	}
 
-	confirmMenu() {
+	confirmMenu() { 
 		// confirm / execute action
-		if(this.currentMenu === null) { // If noMenu, trigger action or open menu for selected icon
+
+		this.activeIdx = this.menu.getActiveMenuIdx()
+		
+		if(this.currentMenu === null && this.activeIdx > -1) { // If noMenu, trigger action or open menu for selected icon
 			this.currentMenu = menuList[this.activeIdx]
 
 			// clear screen canvas and stop animation
@@ -64,8 +67,11 @@ export class AppComponent {
 			this.currentMenu!.screens[0].drawItems.forEach(e => {
 			this.screen.drawMenu(this.currentMenu!.screens[0].drawItems)
 			});
-		} else { // do actionB from menu object
+		} else if (this.currentMenu !== null) { // Menu is open, do actionB from menu object
 
+		} else {
+			// show time
+			alert("time")
 		}
 	}
 
