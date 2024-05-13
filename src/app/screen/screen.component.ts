@@ -20,6 +20,10 @@ export class ScreenComponent implements OnInit {
 	CANVAS_MIDDLE = CANVAS_SIZE.WIDTH / 3.25
 	CANVAS_RIGHT = CANVAS_SIZE.WIDTH / 1.3
 
+	// TODO CHANGE TO USE SERVICE CLASS
+	tName = "shirobabytchi";
+	action = "default"
+
 	currentFrame = 0;
 	framesDrawn = 0; // records # of times the 'animate' function has been called
 	frameLimit = 60; // frame limit should be 30, 60 or 90
@@ -43,26 +47,20 @@ export class ScreenComponent implements OnInit {
 
 		this.canvas!.width = CANVAS_SIZE.WIDTH;
 		this.canvas!.height = CANVAS_SIZE.HEIGHT;
-	
-		// TODO CHANGE TO USE SERVICE CLASS
-		let tName = "shirobabytchi";
-		let action = "main"
 
-		const animation = spriteMap[tName].actions[action];
-		const spriteWidth = spriteMap[tName].spriteWidth;
-		const spriteHeight = spriteMap[tName].spriteHeight;
-		
-		this.currentFrame = 0;
-		this.framesDrawn = 0; // records # of times the 'animate' function has been called
-		this.frameLimit = 60; // frame limit should be 30, 60 or 90
-	
-		// status frame counter
-		this.status_currentFrame = 0;
 
+		// this.currentFrame = 0;
+		// this.framesDrawn = 0; // records # of times the 'animate' function has been called
+		// this.frameLimit = 60; // frame limit should be 30, 60 or 90
+	
+		// // status frame counter
+		// this.status_currentFrame = 0;
+
+		const spriteData = spriteMap[this.tName]
+		const animation = spriteData.actions[this.action];
 		
-		
-		this.animate(animation, spriteWidth, spriteHeight, this.destX);
-	} // OnInit
+		this.animate(animation, spriteData.spriteWidth, spriteData.spriteHeight, this.destX);
+	} // end of OnInit
 
 	// Used to animate the sprites
 	animate(animation: spriteFrameDetails, spriteWidth: number, spriteHeight:number, destX: number) {

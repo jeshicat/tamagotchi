@@ -24,7 +24,7 @@ const untypedData = JSON.parse(`{
 		"spriteWidth": 128,
 		"spriteHeight": 128,
 		"actions" : {
-			"main" : {
+			"default" : {
 				"frames": [{"x": 0, "y": 740}, {"x": 132, "y": 740}],
 				"drift": false
 			},
@@ -38,7 +38,7 @@ const untypedData = JSON.parse(`{
 		"spriteWidth": 128,
 		"spriteHeight": 128,
 		"actions" : {
-			"main" : {
+			"default" : {
 				"frames": [{"x" : 0, "y": 880}, {"x" : 132, "y": 880}, {"x" : 264, "y": 880}, {"x" : 396, "y": 880}],
 				"drift": true
 			},
@@ -80,7 +80,7 @@ const untypedData = JSON.parse(`{
 		"spriteWidth": 128,
 		"spriteHeight": 128,
 		"actions" : {
-			"main" : {
+			"default" : {
 				"frames": [{"x" : 0, "y": 1138}, {"x" : 132, "y": 1138}], 
 				"drift": true
 			},
@@ -94,7 +94,7 @@ const untypedData = JSON.parse(`{
 		"spriteWidth": 128,
 		"spriteHeight": 128,
 		"actions" : {
-			"main": {
+			"default": {
 				"frames": [{"x" : 0, "y": 1008}, {"x" : 132, "y": 1008}],
 				"drift": true
 			},
@@ -108,7 +108,7 @@ const untypedData = JSON.parse(`{
 		"spriteWidth": 128,
 		"spriteHeight": 128,
 		"actions" : {
-			"main": {
+			"default": {
 				"frames": [{"x" : 0, "y": 1008}, {"x" : 130, "y": 1008}],
 				"drift": true
 			} 
@@ -118,7 +118,7 @@ const untypedData = JSON.parse(`{
 		"spriteWidth": 128,
 		"spriteHeight": 128,
 		"actions" : {
-			"main": {
+			"default": {
 				"frames": [{"x" : 0, "y": 1008}, {"x" : 130, "y": 1008}],
 				"drift": true
 			} 
