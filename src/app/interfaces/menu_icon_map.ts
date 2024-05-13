@@ -120,7 +120,7 @@ export const menuList: menu[] = [
             }, { // SNACK
                 srcX: 330, 
                 srcY: 200,
-                spriteWidth: 200,
+                spriteWidth: 199,
                 spriteHeight: 64,
                 destX: 107,
                 destY: 145,
@@ -133,6 +133,15 @@ export const menuList: menu[] = [
                 spriteHeight: 64,
                 destX: 5,
                 destY: 60,
+                destWidth: 64*1.2,
+                destHeight: 64*1.2
+            },{ // ARROW DOWN
+                srcX: 850, 
+                srcY: 0,
+                spriteWidth: 64,
+                spriteHeight: 64,
+                destX: 5,
+                destY: 142,
                 destWidth: 64*1.2,
                 destHeight: 64*1.2
             }], 

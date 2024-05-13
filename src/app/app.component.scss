@@ -9,3 +9,38 @@
     background-position: -160px 121px;
     background-repeat:no-repeat;
 }
+
+.tama-button {
+    height:65px;
+    width: 65px;
+    position: absolute;
+    transform: translate(-50%,-50%);   
+    background: url("../assets/background-skin.png"); 
+    background-position: -19px -6px;
+    border: none;
+}
+
+.tama-button:hover {
+    @extend .tama-button; 
+    background-position: -89px -6px;
+    border: none;
+    cursor:pointer;
+}
+
+.tama-button-1{
+    @extend .tama-button;
+    top:85%;
+    left: 30%;
+}
+
+.tama-button-2{
+    @extend .tama-button;
+    top:90%;
+    left: 50%;
+}
+
+.tama-button-3 {
+    @extend .tama-button;
+    top:85%;
+    left: 70%;
+}
