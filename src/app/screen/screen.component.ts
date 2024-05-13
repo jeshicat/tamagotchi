@@ -12,16 +12,23 @@ import { CANVAS_SIZE, randomInt } from '../../helper';
 export class ScreenComponent implements OnInit {
  
 	@ViewChild('canvas', {static: true}) screenCanvas! : ElementRef; // screen with tamagotchi + animations
+	private spritesheet:HTMLImageElement = new Image();
+	canvas: HTMLCanvasElement | null;
+	ctx: CanvasRenderingContext2D | null;
+
+	constructor() {
+		this.canvas = null;
+		this.ctx = null;
+	}
 
 	ngOnInit() : void {
-		const spritesheet = new Image();
-		spritesheet.src = 'assets/tamagotchi_spritesheet.png'
+		this.spritesheet.src = 'assets/tamagotchi_spritesheet.png'
 
-		const canvas: HTMLCanvasElement = this.screenCanvas.nativeElement;
-		const ctx = canvas.getContext('2d');
+		this.canvas = this.screenCanvas.nativeElement;
+		this.ctx = this.canvas!.getContext('2d');
 
-		canvas.width = CANVAS_SIZE.WIDTH;
-		canvas.height = CANVAS_SIZE.HEIGHT;
+		this.canvas!.width = CANVAS_SIZE.WIDTH;
+		this.canvas!.height = CANVAS_SIZE.HEIGHT;
 		const CANVAS_MIDDLE = CANVAS_SIZE.WIDTH / 3.25
 		const CANVAS_RIGHT = CANVAS_SIZE.WIDTH / 1.3
 
@@ -45,9 +52,9 @@ export class ScreenComponent implements OnInit {
 		let destX = CANVAS_SIZE.WIDTH/3.25;
 
 	// Used to animate the sprites
-		function animate() 
+		const animate = () => 
 		{
-			ctx?.clearRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
+			this.ctx?.clearRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
 			requestAnimationFrame(animate);
 
 			currentFrame = currentFrame % animation.frames.length;
@@ -55,7 +62,7 @@ export class ScreenComponent implements OnInit {
 			let srcY = animation.frames[currentFrame].y;
 
 			// ctx?.drawImage(tamaImage, srcX, srcY, srcW, srcH, destX, destY, destW, destH);
-			ctx?.drawImage(spritesheet, 
+			this.ctx?.drawImage(this.spritesheet, 
 				srcX, 
 				srcY, 
 				spriteWidth, 
@@ -72,7 +79,7 @@ export class ScreenComponent implements OnInit {
 				let srcX2  = animation.frames_status[currentStatusFrame].x;
 				let srcY2  = animation.frames_status[currentStatusFrame].y;
 
-				ctx?.drawImage(spritesheet, 
+				this.ctx?.drawImage(this.spritesheet, 
 					srcX2, 
 					srcY2, 
 					64, 
