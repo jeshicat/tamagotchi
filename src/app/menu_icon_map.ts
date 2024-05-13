@@ -5,8 +5,7 @@ interface menuNavItem {
     position: number,
     destX : number, 
     destY: number,
-    isActive: boolean,
-    menuId?: number
+    isActive: boolean
 }
 
 // Menus shown when icons pressed
@@ -106,7 +105,38 @@ export const menuList: menu[] = [
     { // Feed
         id: 0, 
         screens: [{
-            drawItems: [], // MEAL / SNACK
+            drawItems: [{srcX: 0, 
+                srcY: 0,
+                spriteWidth: 64,
+                spriteHeight: 64,
+                destX: 0,
+                destY: 100,
+                destWidth: 64,
+                destHeight: 64},
+                {srcX: 64, 
+                    srcY: 0,
+                    spriteWidth: 64,
+                    spriteHeight: 64,
+                    destX: 0,
+                    destY: 100,
+                    destWidth: 64,
+                    destHeight: 64},
+                    {srcX: 128, 
+                        srcY: 0,
+                        spriteWidth: 64,
+                        spriteHeight: 64,
+                        destX: 0,
+                        destY: 100,
+                        destWidth: 64,
+                        destHeight: 64},
+                        {srcX: 256, 
+                            srcY: 0,
+                            spriteWidth: 64,
+                            spriteHeight: 65,
+                            destX: 0,
+                            destY: 100,
+                            destWidth: 64,
+                            destHeight: 64}], // MEAL / SNACK
             buttonA: () => {
                 // Move arrow between Meal and Snack
             },
@@ -167,7 +197,7 @@ export const menuList: menu[] = [
         }
     }]
     }, { // Medicine
-        id: 4, 
+        id: 3, 
         screens: [{
             drawItems: [], // Needle animation
             callback: () => {
@@ -186,7 +216,7 @@ export const menuList: menu[] = [
             }
         }]
     },{ // Bath
-        id: 5, 
+        id: 4, 
         screens: [{
             drawItems: [], // Bath animation
             callback: () => {
@@ -204,7 +234,7 @@ export const menuList: menu[] = [
             }
         }]
     }, { // Scale
-        id: 6, 
+        id: 5, 
         screens: [{
             drawItems: [], // scale + weight menu
             buttonA: () => {
@@ -249,7 +279,7 @@ export const menuList: menu[] = [
             }
         }]
     }, { // Discipline
-        id: 7, 
+        id: 6, 
         screens: [{
             drawItems: [], // scolding animation
             callback: () => {
@@ -263,6 +293,23 @@ export const menuList: menu[] = [
             },
             buttonC: () => {
                 // Clear canvas, show "main" animation + status + poo
+            }
+        }]
+    }, { // Set Time
+        id: 7,
+        screens: [{ // Since you can't hold 2 buttons down to "Set time", i might just show local time
+            drawItems: [],  // {AM/PM}, {time HH:mm ss}, {>>>>/SET}
+            callback: () => { 
+                // get time and update frames?
+            },
+            buttonA: () => {
+                // set hour/AMPM  or nothing
+            },
+            buttonB: () => {
+                // set minute or hide clock
+            },
+            buttonC: () => {
+                // confirm time/ nothing
             }
         }]
     }

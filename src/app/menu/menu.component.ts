@@ -26,25 +26,20 @@ export class MenuComponent implements OnInit {
 		
 	ngOnInit() : void {
 		this.canvas_menu = this.navCanvas.nativeElement;
+		this.ctx_menu = this.canvas_menu!.getContext('2d');
+
 		this.canvas_menu!.width = CANVAS_SIZE.WIDTH;
 		this.canvas_menu!.height = CANVAS_SIZE.HEIGHT;
-
-		this.ctx_menu = this.canvas_menu!.getContext('2d');
 		
 		this.navSpritesheet.src = 'assets/menu-icons.svg'
 	 	this.navSpritesheet.onload = () => {
 			this.redrawMenuIcons();
-		}
-
-
-		
-
-		
+		} 
 	} // end of OnInit
 
 	// Redraw menu icons with all unactive
 	redrawMenuIcons() {
-    this.ctx_menu!.clearRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
+		this.ctx_menu!.clearRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
 
 			menuNavItems.forEach(e => {
 				let srcY = e.isTop ? 0 : this.menu_icon_size;

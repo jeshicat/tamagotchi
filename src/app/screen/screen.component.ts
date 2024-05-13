@@ -28,7 +28,6 @@ export class ScreenComponent implements OnInit {
 		let tName = "shirobabytchi";
 		let action = "main"
 
-	//ADDED
 		const animation = spriteMap[tName].actions[action];
 		const spriteWidth = spriteMap[tName].spriteWidth;
 		const spriteHeight = spriteMap[tName].spriteHeight;

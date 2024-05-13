@@ -1,15 +1,18 @@
 export interface MyTamagotchi {
+    id: number,
     tamaId: number,
     type: number,
-    birthDate: Date, // or age? days and hrs
+    birthDate?: Date,
+    age: number, // or age? days and hrs
     happiness: number,
     hunger: number,
-    isDirty: boolean,
+    discipline: number,
+    poopCount: number,
     isSick: boolean,
     sickCount: number,
     careMistakes: number,
     disciplineMistakes: number,
-    isDying: boolean
+    lifespan: number
 }
 
 export interface Tamagotchi {
