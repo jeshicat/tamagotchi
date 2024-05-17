@@ -1,28 +1,51 @@
 .tama-shell {
-    height:910px;
-    width: 638px;
+    // height:910px;
+    // width: 638px;
+    // position: absolute;
+    // top:50%;
+    // left: 50%;
+    // transform: translate(-50%,-50%);   
+    // background-image: url("../assets/background-skin.png"); 
+    // background-position: -160px 121px;
+    // background-repeat:no-repeat;
+
+    height: 500px;
+    width: 405px;
     position: absolute;
     top:50%;
     left: 50%;
     transform: translate(-50%,-50%);   
     background-image: url("../assets/background-skin.png"); 
-    background-position: -160px 121px;
+    background-size: cover;
+    background-position: -103px -1px;
     background-repeat:no-repeat;
 }
 
+// .tama-button {
+//     height:65px;
+//     width: 65px;
+//     position: absolute;
+//     transform: translate(-50%,-50%);   
+//     background: url("../assets/background-skin.png"); 
+//     background-position: -19px -6px;
+//     border: none;
+// }
+
 .tama-button {
-    height:65px;
-    width: 65px;
-    position: absolute;
-    transform: translate(-50%,-50%);   
+    height:47px;
+    width: 47px;
     background: url("../assets/background-skin.png"); 
-    background-position: -19px -6px;
+    background-size:563px;
+    position: absolute;
+    background-position: -15px -5px;
+    transform: translate(-50%,-50%);   
     border: none;
 }
 
 .tama-button:hover {
     @extend .tama-button; 
-    background-position: -89px -6px;
+   // background-position: -89px -6px;
+    background-position: -62px -5px;
     border: none;
     cursor:pointer;
 }

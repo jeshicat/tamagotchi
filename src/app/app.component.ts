@@ -1,8 +1,9 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MenuComponent } from './menu/menu.component';
 import { ScreenComponent } from './screen/screen.component';
-import { menuList, menuNavItems, menu } from './interfaces/menu_icon_map';
+import { MenuService} from './menu/menu.service';
+import { menu as iMenu } from './interfaces/menu_icon_map';
 
 import { clearCanvas, randomInt } from '../helper';
 
@@ -16,58 +17,76 @@ import { clearCanvas, randomInt } from '../helper';
 
 export class AppComponent {
 	title = 'tamagotchi';
-	@ViewChild('menu') menu!: MenuComponent;
-	@ViewChild('screen') screen!: ScreenComponent;
-	
-	activeIdx:number = -1; // which icon is selected on nav menu
-	currentMenu: menu | null = null; // currently opened menu
+	@ViewChild('menu') menu_com!: MenuComponent;
+	@ViewChild('screen') screen_com!: ScreenComponent;
+	MenuServ: MenuService = inject(MenuService);
+
+	openMenuScreen: iMenu | null = null; // currently opened menu
 
 	constructor() { }
 
 	// BUTTON A Actions
 	selectMenu() {
 		// cycle through menu options
-		//alert("select")
 		// Get current open menu 
 
 		// if no menu open, cycle through menu options
-		if(this.currentMenu === null) {
-			this.activeIdx = this.menu.getActiveMenuIdx();
+		if(this.openMenuScreen === null) {
+			let idx = this.MenuServ.getActiveMenuIconIdx();
+			let menuNavIcons = this.MenuServ.getMenuIcons();
 			
-			if(this.activeIdx > -1) menuNavItems[this.activeIdx].isActive = false;
+			if(idx > -1) this.MenuServ.setActiveMenuIconByIdx(idx, false)
 
-			this.activeIdx++;
+			idx++;
 
 			// resets index if reach end of icons
-			if(this.activeIdx === menuNavItems.length) {
-				this.activeIdx = 0;
+			if(idx === menuNavIcons.length) {
+				idx = 0;
 			}
 
 			// sets new icon to be highlighted
-			menuNavItems[this.activeIdx].isActive = true;
-
-			this.menu.redrawMenuIcons()
+			this.MenuServ.setActiveMenuIconByIdx(idx, true)
+			this.menu_com.redrawMenuIcons()
+			
 		} else {
 			// go through options in menu / play game
+			// Get next screen for menu?
+			let menuIdxs = this.MenuServ.getCurrentMenu();
+			
+			menuIdxs.screenIdx++;
+
+			if(menuIdxs.screenIdx >= this.openMenuScreen.screens.length) {
+				menuIdxs.screenIdx = 0;
+			}
+
+			let curScreen = this.openMenuScreen.screens[menuIdxs.screenIdx];
+			this.MenuServ.setCurrentMenu(menuIdxs);
+			this.screen_com.drawMenu(curScreen.drawItems!);
 		}
 	}
 
 	confirmMenu() { 
 		// confirm / execute action
 
-		this.activeIdx = this.menu.getActiveMenuIdx()
+		let idx = this.MenuServ.getActiveMenuIconIdx()
 		
-		if(this.currentMenu === null && this.activeIdx > -1) { // If noMenu, trigger action or open menu for selected icon
-			this.currentMenu = menuList[this.activeIdx]
+		// If noMenu, trigger action or open menu for selected icon
+		if(this.openMenuScreen === null && idx > -1) { 
+			this.openMenuScreen = this.MenuServ.getMenuByIdx(idx)
 
-			// clear screen canvas and stop animation
-			this.screen.clearCanvasStopAnimation()
-			
-			// draw menu frames
-			this.currentMenu!.screens[0].drawItems.forEach(e => {
-			this.screen.drawMenu(this.currentMenu!.screens[0].drawItems)
-			});
-		} else if (this.currentMenu !== null) { // Menu is open, do actionB from menu object
+			// draw menu frames if has
+			if(this.openMenuScreen!.screens[0].drawItems) {
+				// clear screen canvas and stop animation
+				this.screen_com.clearCanvasStopAnimation()
+
+				this.openMenuScreen!.screens[0].drawItems.forEach(e => {
+					this.screen_com.drawMenu(this.openMenuScreen!.screens[0].drawItems!)
+				});
+			}
+
+			// call callback function if has
+			if(this.openMenuScreen!.screens[0].callback) this.openMenuScreen!.screens[0].callback()
+		} else if (this.openMenuScreen !== null) { // Menu is open, do actionB from menu object
 
 		} else {
 			// show time
@@ -77,12 +96,12 @@ export class AppComponent {
 
 	cancelMenu() {
 		// back to main menu / cancel
-		if(this.currentMenu !== null) {
-			this.screen.clearCanvasStopAnimation();
-			this.currentMenu = null;
-			this.screen.drawScreenAnimation(); // reshow tamagotchi
+		if(this.openMenuScreen !== null) {
+			this.screen_com.clearCanvasStopAnimation();
+			this.openMenuScreen = null;
+			this.screen_com.drawScreenAnimation(); // reshow tamagotchi
 		} else {
-			this.menu.clearMenuIcons();
+			this.menu_com.clearMenuIcons();
 		}
 	}
 

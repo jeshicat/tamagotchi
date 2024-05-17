@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { spriteMap, spriteData, spriteFrameDetails } from '../interfaces/sprite_map';
 import { menuContextParams } from '../interfaces/menu_icon_map';
-import { CANVAS_SIZE, clearCanvas, randomInt } from '../../helper';
+import { SCREEN_SIZE, clearCanvas, randomInt } from '../../helper';
 import { TamagotchiService as TService } from '../tamagotchi.service';
 
 @Component({
@@ -18,8 +18,8 @@ export class ScreenComponent implements OnInit {
 	canvas: HTMLCanvasElement | null;
 	ctx: CanvasRenderingContext2D | null;
 
-	CANVAS_MIDDLE = CANVAS_SIZE.WIDTH / 3.25
-	CANVAS_RIGHT = CANVAS_SIZE.WIDTH / 1.3
+	CANVAS_MIDDLE = SCREEN_SIZE.HEIGHT / 2.5
+	CANVAS_RIGHT = SCREEN_SIZE.WIDTH / 1.3
 
 	animRequestID: number = 0;
 
@@ -33,7 +33,7 @@ export class ScreenComponent implements OnInit {
 	
 	// Variables used for x axis movement of sprite
 	movesFrameDrawn = 0;
-	destX = CANVAS_SIZE.WIDTH/3.25;
+	destX = SCREEN_SIZE.WIDTH/2;
 
 	status_currentFrame = 0; // "status" frame counter
 
@@ -46,8 +46,8 @@ export class ScreenComponent implements OnInit {
 		this.spritesheet.src = 'assets/tamagotchi_spritesheet.png'
 
 		this.canvas = this.screenCanvas.nativeElement;
-		this.canvas!.width = CANVAS_SIZE.WIDTH;
-		this.canvas!.height = CANVAS_SIZE.HEIGHT;
+		this.canvas!.width = SCREEN_SIZE.WIDTH;
+		this.canvas!.height = SCREEN_SIZE.HEIGHT;
 
 		this.initContext();
 
@@ -57,7 +57,7 @@ export class ScreenComponent implements OnInit {
 	
 		// // status frame counter
 		// this.status_currentFrame = 0;
-		
+
 		this.drawScreenAnimation();
 	} // end of OnInit
 
@@ -78,8 +78,8 @@ export class ScreenComponent implements OnInit {
 				spriteHeight, 
 				destX, 
 				this.CANVAS_MIDDLE, 
-				spriteWidth, 
-				spriteHeight);
+				spriteWidth/2, 
+				spriteHeight/2);
 		
 			// status frames you show on upper right side of tama sprite
 			if(animation.frames_status) {
@@ -108,7 +108,7 @@ export class ScreenComponent implements OnInit {
 				destX = destX + (randomInt(-1, 1) * 20)
 
 				// Make sure sprite doesn't leave canvas
-				if(destX >= CANVAS_SIZE.WIDTH - spriteWidth) {
+				if(destX >= SCREEN_SIZE.WIDTH - spriteWidth) {
 					destX -= 20;
 				} else if (destX <= spriteWidth) {
 					destX += 20;
@@ -139,12 +139,13 @@ export class ScreenComponent implements OnInit {
 			this.framesDrawn = 0;
 			this.frameLimit = 60;
 			this.movesFrameDrawn = 0;
-			this.destX = CANVAS_SIZE.WIDTH/3.25;
+			this.destX = SCREEN_SIZE.WIDTH/3.25;
 			this.status_currentFrame = 0;
 		}
 
 		// Draws menu based on params from app.component
 		drawMenu(menuSprites: menuContextParams[]) {
+			clearCanvas(this.ctx)
 			menuSprites.forEach(x => {
 				this.ctx?.drawImage(this.spritesheet, 
 					x.srcX, 

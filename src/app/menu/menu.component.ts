@@ -1,6 +1,6 @@
-import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { menuNavItems } from '../interfaces/menu_icon_map';
+import { Component, ViewChild, ElementRef, OnInit, inject } from '@angular/core';
 import { CANVAS_SIZE, clearCanvas } from '../../helper';
+import { MenuService } from './menu.service';
 
 @Component({
 	selector: 'app-menu',
@@ -9,6 +9,7 @@ import { CANVAS_SIZE, clearCanvas } from '../../helper';
 	templateUrl: './menu.component.html',
 	styleUrl: './menu.component.scss'
 })
+
 export class MenuComponent implements OnInit {
 
 	@ViewChild('canvas_nav', {static: true}) navCanvas! : ElementRef; 
@@ -17,11 +18,14 @@ export class MenuComponent implements OnInit {
 	private navSpritesheet:HTMLImageElement = new Image();
 
 	menu_icon_size = 21; // size of icon on sprite
-	menu_icon_scale_size = 30; // used to scale icon size
+	menu_icon_scale_size = 23; // used to scale icon size
+	
+	MenuServ: MenuService = inject(MenuService);
 
 	constructor() {  
 		this.canvas_menu = null;
 		this.ctx_menu = null;
+
 	} // service to populate icon object?
 		
 	ngOnInit() : void {
@@ -41,7 +45,7 @@ export class MenuComponent implements OnInit {
 	redrawMenuIcons() {
 		clearCanvas(this.ctx_menu)
 
-		menuNavItems.forEach(e => {
+		this.MenuServ.getMenuIcons().forEach(e => {
 			let srcY = e.isTop ? 0 : this.menu_icon_size;
 			
 			this.ctx_menu!.drawImage(
@@ -58,13 +62,12 @@ export class MenuComponent implements OnInit {
 		});
 	}
 
-	getActiveMenuIdx() {
-		return menuNavItems.map(e => e.isActive).indexOf(true);
-	}
-
 	clearMenuIcons() {
-		menuNavItems[this.getActiveMenuIdx()].isActive = false;
-		this.redrawMenuIcons();
+		let idx = this.MenuServ.getActiveMenuIconIdx();
+		if(idx > -1) {
+			this.MenuServ.setActiveMenuIconByIdx(idx, false)
+			this.redrawMenuIcons();
+		}
 	}
 		
 } // end of class MenuComponent
