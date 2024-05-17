@@ -6,7 +6,7 @@ import { menu, menuNavItem as menuIcons, menuContextParams } from '../interfaces
 })
 
 export class MenuService {
-	protected currentMenu: openMenuObj = {
+	protected currentMenu: openMenuIdxs = {
 		menuId: -1,
 		screenIdx: -1,
 		frameIdx: -1
@@ -118,7 +118,7 @@ export class MenuService {
 				// MEAL ACTIONS
 				buttonA: () => {
 					// Move arrow between Meal and Snack
-					this.cycleMenuScreens();
+					//this.cycleMenuScreens();
 				},
 				buttonB: () => {
 					this.triggerActionFeed(true)
@@ -343,22 +343,7 @@ export class MenuService {
 	]
 
 	constructor() {}
-	// Draws menu based on params from app.component
-	// drawMenu(ctx: CanvasRenderingContext2D | null, menuSprites: menuContextParams[]) {
-	// 	clearCanvas(this.ctx?)
-	// 	menuSprites.forEach(x => {
-	// 		this.ctx?.drawImage(this.spritesheet, 
-	// 			x.srcX, 
-	// 			x.srcY, 
-	// 			x.spriteWidth, 
-	// 			x.spriteHeight, 
-	// 			x.destX, 
-	// 			x.destY, 
-	// 			x.destWidth, 
-	// 			x.destHeight);
-	// 	})
-	// }
-
+	
 	getMenuIcons() {
 		return this.menuIcons
 	}
@@ -378,19 +363,21 @@ export class MenuService {
 		}
 	}
 
-	getMenuByIdx(idx:number) {
+	// gets current menu obj
+	getMenuByIdx(idx:number): menu {
 		return this.menus[idx]
 	}
 
-	getCurrentMenu() { 
+	// gets current menu, screen and frame idxs
+	getCurrentMenuIdxs(): openMenuIdxs { 
 		return this.currentMenu;
 	}
 
-	setCurrentMenu(obj: openMenuObj) {
+	setCurrentMenuIdxs(obj: openMenuIdxs) {
 		this.currentMenu = obj;
 	}
 
-	cycleMenuScreens() {
+	cycleMenuScreens(callback: Function) {
 		let curMenu = this.menus[this.currentMenu.menuId];
 		this.currentMenu.screenIdx++;
 
@@ -400,6 +387,7 @@ export class MenuService {
 
 		let curScreen = curMenu.screens[this.currentMenu.screenIdx];
 	//	this.screen.drawMenu(curScreen.drawItems!);
+		callback(curScreen.drawItems!);
 	}
 
 	triggerActionFeed(isMeal: boolean = true) {
@@ -417,7 +405,7 @@ export class MenuService {
 }
 
 // menuId = -1 means no open menu
-export interface openMenuObj {
+export interface openMenuIdxs {
 	menuId: number,
 	screenIdx: number,
 	frameIdx: number

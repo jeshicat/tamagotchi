@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MenuComponent } from './menu/menu.component';
 import { ScreenComponent } from './screen/screen.component';
@@ -15,7 +15,7 @@ import { clearCanvas, randomInt } from '../helper';
 	styleUrl: './app.component.scss'
 })
 
-export class AppComponent {
+export class AppComponent  {
 	title = 'tamagotchi';
 	@ViewChild('menu') menu_com!: MenuComponent;
 	@ViewChild('screen') screen_com!: ScreenComponent;
@@ -51,7 +51,7 @@ export class AppComponent {
 		} else {
 			// go through options in menu / play game
 			// Get next screen for menu?
-			let menuIdxs = this.MenuServ.getCurrentMenu();
+			let menuIdxs = this.MenuServ.getCurrentMenuIdxs();
 			
 			menuIdxs.screenIdx++;
 
@@ -60,8 +60,9 @@ export class AppComponent {
 			}
 
 			let curScreen = this.openMenuScreen.screens[menuIdxs.screenIdx];
-			this.MenuServ.setCurrentMenu(menuIdxs);
-			this.screen_com.drawMenu(curScreen.drawItems!);
+			this.MenuServ.setCurrentMenuIdxs(menuIdxs);
+			this.screen_com.drawMenu(curScreen.drawItems!)
+			//this.MenuServ.cycleMenuScreens(this.screen_com.drawMenu)
 		}
 	}
 
