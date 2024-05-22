@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { spriteMap, spriteData, spriteFrameDetails } from '../interfaces/sprite_map';
 import { menuContextParams } from '../interfaces/menu_icon_map';
 import { SCREEN_SIZE, clearCanvas, randomInt } from '../../helper';
-import { TamagotchiService as TService } from '../tamagotchi.service';
+import { TamagotchiService } from '../tamagotchi.service';
 
 @Component({
 	selector: 'app-screen',
@@ -13,6 +13,10 @@ import { TamagotchiService as TService } from '../tamagotchi.service';
 })
 
 export class ScreenComponent implements OnInit {
+	
+	TamaService: TamagotchiService = inject(TamagotchiService)
+
+
 	@ViewChild('canvas', {static: true}) screenCanvas! : ElementRef; // screen with tamagotchi + animations
 	private spritesheet:HTMLImageElement = new Image();
 	canvas: HTMLCanvasElement | null;
@@ -51,6 +55,10 @@ export class ScreenComponent implements OnInit {
 
 		this.initContext();
 
+		this.TamaService.actionSubject.subscribe({next: (e) => {
+			this.drawScreenAnimation();
+		}})
+
 		// this.currentFrame = 0;
 		// this.framesDrawn = 0; // records # of times the 'animate' function has been called
 		// this.frameLimit = 60; // frame limit should be 30, 60 or 90
@@ -58,7 +66,6 @@ export class ScreenComponent implements OnInit {
 		// // status frame counter
 		// this.status_currentFrame = 0;
 
-		this.drawScreenAnimation();
 	} // end of OnInit
 
 	// Used to animate the sprites
@@ -69,6 +76,11 @@ export class ScreenComponent implements OnInit {
 			this.currentFrame = this.currentFrame % animation.frames.length;
 			let srcX = animation.frames[this.currentFrame].x;
 			let srcY = animation.frames[this.currentFrame].y;
+
+			if(animation.stopAtFrameEnd && this.currentFrame === animation.frames.length-1) {
+				this.TamaService.actionSubject.next("default")
+				return;
+			}
 
 			// ctx?.drawImage(tamaImage, srcX, srcY, srcW, srcH, destX, destY, destW, destH);
 			this.ctx?.drawImage(this.spritesheet, 
@@ -145,7 +157,7 @@ export class ScreenComponent implements OnInit {
 
 		// Draws menu based on params from app.component
 		drawMenu(menuSprites: menuContextParams[]) {
-			clearCanvas(this.ctx)
+			this.clearCanvasStopAnimation();
 			menuSprites.forEach(x => {
 				this.ctx?.drawImage(this.spritesheet, 
 					x.srcX, 
@@ -160,10 +172,19 @@ export class ScreenComponent implements OnInit {
 		}
 
 		drawScreenAnimation() {
-			const spriteData = spriteMap[this.tName]
-			const animation = spriteData.actions[this.action];
+			//let action = this.TamaService.getTamaAnimation();
+			let action = this.TamaService.actionSubject.getValue();
+			console.log("draw animation: " + action)
+			if(action !== "") {
+				if(this.ctx === null) {
+					this.initContext()
+				}
 
-			this.animate(animation, spriteData.spriteWidth, spriteData.spriteHeight, this.destX);
+				const spriteData = spriteMap[this.tName]
+				const animation = spriteData.actions[action];
+	
+				this.animate(animation, spriteData.spriteWidth, spriteData.spriteHeight, this.destX);
+			}
 		}
 		
 	} 

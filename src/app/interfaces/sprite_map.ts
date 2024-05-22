@@ -12,6 +12,7 @@ export interface spriteFrameDetails {
 	frames: frameCoordinate[];
 	frames_status?: frameCoordinate[];
 	drift: boolean;
+	stopAtFrameEnd?: boolean;
 }
 
 interface frameCoordinate {
@@ -42,12 +43,18 @@ const untypedData = JSON.parse(`{
 				"frames": [{"x" : 0, "y": 880}, {"x" : 132, "y": 880}, {"x" : 264, "y": 880}, {"x" : 396, "y": 880}],
 				"drift": true
 			},
-			"feed_eat" : {
-				"frames": [{"x" : 520, "y": 880}, {"x" : 650, "y": 880}],
-				"drift": false
+			"feed_meal" : {
+				"frames": [{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880}],
+				"drift": false,
+				"stopAtFrameEnd": true
 			},
-			"feed_full" : {
-				"frames": [{"x" : 520, "y": 880}, {"x" : 912, "y": 880}],
+			"feed_snack" : {
+				"frames": [{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880}],
+				"drift": false,
+				"stopAtFrameEnd": true
+			},
+			"no" : {
+				"frames": [{"x" : 520, "y": 880}, {"x" : 912, "y": 880},{"x" : 520, "y": 880}, {"x" : 912, "y": 880}],
 				"drift": false
 			},
 			"play_wait" : {

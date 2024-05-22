@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { MenuComponent } from './menu/menu.component';
 import { ScreenComponent } from './screen/screen.component';
 import { MenuService} from './menu/menu.service';
+import { TamagotchiService } from './tamagotchi.service';
 import { menu as iMenu } from './interfaces/menu_icon_map';
 
 import { clearCanvas, randomInt } from '../helper';
@@ -20,8 +21,7 @@ export class AppComponent  {
 	@ViewChild('menu') menu_com!: MenuComponent;
 	@ViewChild('screen') screen_com!: ScreenComponent;
 	MenuServ: MenuService = inject(MenuService);
-
-	openMenuScreen: iMenu | null = null; // currently opened menu
+	TamaServ: TamagotchiService = inject(TamagotchiService);
 
 	constructor() { }
 
@@ -31,7 +31,7 @@ export class AppComponent  {
 		// Get current open menu 
 
 		// if no menu open, cycle through menu options
-		if(this.openMenuScreen === null) {
+		if(this.MenuServ.openMenuScreen === null) {
 			let idx = this.MenuServ.getActiveMenuIconIdx();
 			let menuNavIcons = this.MenuServ.getMenuIcons();
 			
@@ -50,19 +50,24 @@ export class AppComponent  {
 			
 		} else {
 			// go through options in menu / play game
-			// Get next screen for menu?
-			let menuIdxs = this.MenuServ.getCurrentMenuIdxs();
-			
-			menuIdxs.screenIdx++;
+			const screen = this.MenuServ.getMenuScreen();
 
-			if(menuIdxs.screenIdx >= this.openMenuScreen.screens.length) {
-				menuIdxs.screenIdx = 0;
+			if(screen.buttonA) {
+				alert("button a!")
+			} else {
+				// Cycle through next screen for menu
+				let menuIdxs = this.MenuServ.getCurrentMenuIdxs();
+							
+				menuIdxs.screenIdx++;
+
+				if(menuIdxs.screenIdx >= this.MenuServ.openMenuScreen.screens.length) {
+					menuIdxs.screenIdx = 0;
+				}
+
+				let curScreen = this.MenuServ.openMenuScreen.screens[menuIdxs.screenIdx];
+				this.MenuServ.setCurrentMenuIdxs(menuIdxs);
+				this.screen_com.drawMenu(curScreen.drawItems!)
 			}
-
-			let curScreen = this.openMenuScreen.screens[menuIdxs.screenIdx];
-			this.MenuServ.setCurrentMenuIdxs(menuIdxs);
-			this.screen_com.drawMenu(curScreen.drawItems!)
-			//this.MenuServ.cycleMenuScreens(this.screen_com.drawMenu)
 		}
 	}
 
@@ -72,23 +77,22 @@ export class AppComponent  {
 		let idx = this.MenuServ.getActiveMenuIconIdx()
 		
 		// If noMenu, trigger action or open menu for selected icon
-		if(this.openMenuScreen === null && idx > -1) { 
-			this.openMenuScreen = this.MenuServ.getMenuByIdx(idx)
+		if(this.MenuServ.openMenuScreen === null && idx > -1) { 
+			this.MenuServ.openMenuScreen = this.MenuServ.getMenuByIdx(idx)
 
 			// draw menu frames if has
-			if(this.openMenuScreen!.screens[0].drawItems) {
+			if(this.MenuServ.openMenuScreen!.screens[0].drawItems) {
 				// clear screen canvas and stop animation
-				this.screen_com.clearCanvasStopAnimation()
-
-				this.openMenuScreen!.screens[0].drawItems.forEach(e => {
-					this.screen_com.drawMenu(this.openMenuScreen!.screens[0].drawItems!)
-				});
+				//this.screen_com.clearCanvasStopAnimation()
+				this.TamaServ.actionSubject.next("");
+				this.screen_com.drawMenu(this.MenuServ.openMenuScreen!.screens[0].drawItems!)
 			}
 
 			// call callback function if has
-			if(this.openMenuScreen!.screens[0].callback) this.openMenuScreen!.screens[0].callback()
-		} else if (this.openMenuScreen !== null) { // Menu is open, do actionB from menu object
-
+			//if(this.openMenuScreen!.screens[0].callback) this.openMenuScreen!.screens[0].callback()
+		} else if (this.MenuServ.openMenuScreen !== null) { // Menu is open, do actionB from menu object
+			const screen = this.MenuServ.getMenuScreen();
+			if(screen.buttonB) { screen.buttonB(); };
 		} else {
 			// show time
 			alert("time")
@@ -97,10 +101,11 @@ export class AppComponent  {
 
 	cancelMenu() {
 		// back to main menu / cancel
-		if(this.openMenuScreen !== null) {
-			this.screen_com.clearCanvasStopAnimation();
-			this.openMenuScreen = null;
-			this.screen_com.drawScreenAnimation(); // reshow tamagotchi
+		if(this.MenuServ.openMenuScreen !== null) {
+			this.TamaServ.actionSubject.next("default")
+			//this.screen_com.clearCanvasStopAnimation();
+			this.MenuServ.openMenuScreen = null;
+			//this.screen_com.drawScreenAnimation(); // reshow tamagotchi
 		} else {
 			this.menu_com.clearMenuIcons();
 		}

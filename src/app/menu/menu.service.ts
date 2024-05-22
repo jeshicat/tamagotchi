@@ -1,11 +1,15 @@
-import { Injectable } from '@angular/core';
-import { menu, menuNavItem as menuIcons, menuContextParams } from '../interfaces/menu_icon_map';
-
+import { Injectable, inject } from '@angular/core';
+import { menu, menuNavItem as menuIcons, spriteMenuData } from '../interfaces/menu_icon_map';
+import { TamagotchiService } from '../tamagotchi.service';
 @Injectable({
 	providedIn: 'root'
 })
 
 export class MenuService {
+	TamaService = inject(TamagotchiService);
+	
+	openMenuScreen: menu | null = null; // currently opened menu
+
 	protected currentMenu: openMenuIdxs = {
 		menuId: -1,
 		screenIdx: -1,
@@ -116,21 +120,8 @@ export class MenuService {
 					destHeight: 64/1.4
 				}], 
 				// MEAL ACTIONS
-				buttonA: () => {
-					// Move arrow between Meal and Snack
-					//this.cycleMenuScreens();
-				},
 				buttonB: () => {
 					this.triggerActionFeed(true)
-					// Clear canvas
-					// Start feeding animation for Meal or Snack
-					// If MEAL, decrease hunger
-					// If SNACK, decrease hunger, increase happiness, increase weight, increase sickness change?
-					// Switch back to "main" animation + status + poo
-				},
-				buttonC: () => {
-					// Cancel menu
-					// Clear canvas, show "main" animation + status + poo
 				}
 			}, { // SNACK
 				drawItems: [
@@ -163,22 +154,8 @@ export class MenuService {
 					destHeight: 64/1.4
 				}], 
 				// SNACK ACTIONS
-				buttonA: () => {
-					// Move arrow between Meal and Snack
-				  //  menuList[0].screens[0].drawItems
-				   
-				},
 				buttonB: () => {
 					this.triggerActionFeed(false)
-					// Clear canvas
-					// Start feeding animation for Meal or Snack
-					// If MEAL, decrease hunger
-					// If SNACK, decrease hunger, increase happiness, increase weight, increase sickness change?
-					// Switch back to "main" animation + status + poo
-				},
-				buttonC: () => {
-					// Cancel menu
-					// Clear canvas, show "main" animation + status + poo
 				}
 			}]
 		}, { // Lights
@@ -344,16 +321,16 @@ export class MenuService {
 
 	constructor() {}
 	
-	getMenuIcons() {
+	getMenuIcons(): menuIcons[] {
 		return this.menuIcons
 	}
 
-	getActiveMenuIconIdx() {
+	getActiveMenuIconIdx(): number {
 		return this.currentMenu.menuId;
 	}
 
 	// Sets boolean on icon obj that will highlight icon when active, sets current screen var
-	setActiveMenuIconByIdx(idx: number, isActive: boolean) {
+	setActiveMenuIconByIdx(idx: number, isActive: boolean): void {
 		this.menuIcons[idx].isActive = isActive;
 
 		if(isActive) {
@@ -377,6 +354,11 @@ export class MenuService {
 		this.currentMenu = obj;
 	}
 
+	getMenuScreen(): spriteMenuData {
+		const screen = this.menus[this.currentMenu.menuId].screens[this.currentMenu.screenIdx]
+		return screen
+	}
+
 	cycleMenuScreens(callback: Function) {
 		let curMenu = this.menus[this.currentMenu.menuId];
 		this.currentMenu.screenIdx++;
@@ -391,6 +373,26 @@ export class MenuService {
 	}
 
 	triggerActionFeed(isMeal: boolean = true) {
+		this.openMenuScreen = null;
+		if(this.TamaService.myTama.hunger < this.TamaService.maxHunger) {
+			if (isMeal){
+				this.TamaService.myTama.hunger++;
+				this.TamaService.myTama.weight++;
+				// burger animation
+				this.TamaService.actionSubject.next("feed_meal");
+			} else if(!isMeal) {
+				this.TamaService.myTama.hunger++;
+				this.TamaService.myTama.happiness++;
+				this.TamaService.myTama.weight+=2; // adds additional 1lb
+				// cake animation
+				this.TamaService.actionSubject.next("feed_snack");
+			}
+	 	} else {
+			// shake head no animation because not hungry
+			this.TamaService.actionSubject.next("no");
+		}
+		
+		
 		// Check if hungry...
 		// YES ... 
 		// Clear canvas

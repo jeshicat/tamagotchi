@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { MyTamagotchi } from './interfaces/tamagotchi';
-import { randomInt } from '../helper';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +8,13 @@ import { randomInt } from '../helper';
 
 export class TamagotchiService {
 	myTama: MyTamagotchi;
+
+	actionSubject = new BehaviorSubject("default");
+
+	maxHunger = 4;
+	maxHappiness = 4;
+	maxDiscipline = 100;
+
 
 	constructor() {
 		this.myTama = this.createNewLife()
@@ -19,6 +26,7 @@ export class TamagotchiService {
 			tamaId: 0,
 			type: 0,
 			age: 0,
+			weight: 5,
 			birthDate: new Date(),
 			happiness: 0,
 			hunger: 0,
@@ -31,6 +39,14 @@ export class TamagotchiService {
 			lifespan: 25
 		} 
 	}
+
+	// getTamaAnimation(): string {
+	// 	return this.tamaAnimation()
+	// }
+
+	// updateTamaAnimationStatus(action: string) {
+	// 	this.tamaAnimation.set(action)
+	// }
 
 	addCareMistakes() {
 		this.myTama.careMistakes++;

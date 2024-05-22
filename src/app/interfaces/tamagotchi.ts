@@ -4,6 +4,7 @@ export interface MyTamagotchi {
     type: number,
     birthDate?: Date,
     age: number, // or age? days and hrs
+    weight: number,
     happiness: number,
     hunger: number,
     discipline: number,

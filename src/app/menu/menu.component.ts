@@ -30,7 +30,7 @@ export class MenuComponent implements OnInit {
 		
 	ngOnInit() : void {
 		this.canvas_menu = this.navCanvas.nativeElement;
-		this.ctx_menu = this.canvas_menu!.getContext('2d');
+		this.initCanvasContext();
 
 		this.canvas_menu!.width = CANVAS_SIZE.WIDTH;
 		this.canvas_menu!.height = CANVAS_SIZE.HEIGHT;
@@ -68,6 +68,14 @@ export class MenuComponent implements OnInit {
 			this.MenuServ.setActiveMenuIconByIdx(idx, false)
 			this.redrawMenuIcons();
 		}
+	}
+
+	initCanvasContext() {
+		this.ctx_menu = this.canvas_menu!.getContext('2d');
+	}
+
+	clearCanvasContext() {
+		this.ctx_menu = null;
 	}
 		
 } // end of class MenuComponent
