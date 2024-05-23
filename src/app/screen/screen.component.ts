@@ -25,7 +25,7 @@ export class ScreenComponent implements OnInit {
 	CANVAS_MIDDLE = SCREEN_SIZE.HEIGHT / 2.5
 	CANVAS_RIGHT = SCREEN_SIZE.WIDTH / 1.3
 
-	animRequestID: number = 0;
+	animRequestIDs: number[] = [];
 
 	// TODO CHANGE TO USE SERVICE CLASS
 	tName = "shirobabytchi";
@@ -69,72 +69,128 @@ export class ScreenComponent implements OnInit {
 	} // end of OnInit
 
 	// Used to animate the sprites
+	isNestedPlaying = false;
+
 	animate(animation: spriteFrameDetails, spriteWidth: number, spriteHeight:number, destX: number) {
 		clearCanvas(this.ctx);
-		this.animRequestID = requestAnimationFrame(() => {this.animate(animation, spriteWidth, spriteHeight, destX)});
+		this.currentFrame = this.currentFrame % animation.frames.length;
+		let srcX = animation.frames[this.currentFrame].x;
+		let srcY = animation.frames[this.currentFrame].y;
 
-			this.currentFrame = this.currentFrame % animation.frames.length;
-			let srcX = animation.frames[this.currentFrame].x;
-			let srcY = animation.frames[this.currentFrame].y;
+		if(animation.stopAtFrameEnd && this.currentFrame === animation.frames.length-1) {
+			this.TamaService.actionSubject.next("default")
+			return;
+		}
 
-			if(animation.stopAtFrameEnd && this.currentFrame === animation.frames.length-1) {
-				this.TamaService.actionSubject.next("default")
-				return;
-			}
-
-			// ctx?.drawImage(tamaImage, srcX, srcY, srcW, srcH, destX, destY, destW, destH);
-			this.ctx?.drawImage(this.spritesheet, 
-				srcX, 
-				srcY, 
-				spriteWidth, 
-				spriteHeight, 
-				destX, 
-				this.CANVAS_MIDDLE, 
-				spriteWidth/2, 
-				spriteHeight/2);
+		// ctx?.drawImage(tamaImage, srcX, srcY, srcW, srcH, destX, destY, destW, destH);
+		this.ctx?.drawImage(this.spritesheet, 
+			srcX, 
+			srcY, 
+			spriteWidth, 
+			spriteHeight, 
+			destX, 
+			this.CANVAS_MIDDLE, 
+			spriteWidth/2, 
+			spriteHeight/2);
 		
-			// status frames you show on upper right side of tama sprite
-			if(animation.frames_status) {
+		// status frames you show on upper right side of tama sprite
+		if(animation.frames_status) {
 
-				this.status_currentFrame = this.status_currentFrame % animation.frames_status.length;
-				let srcX2  = animation.frames_status[this.status_currentFrame].x;
-				let srcY2  = animation.frames_status[this.status_currentFrame].y;
+			this.status_currentFrame = this.status_currentFrame % animation.frames_status.length;
+			let srcX2  = animation.frames_status[this.status_currentFrame].x;
+			let srcY2  = animation.frames_status[this.status_currentFrame].y;
 
+			this.ctx?.drawImage(this.spritesheet, 
+				srcX2, 
+				srcY2, 
+				64, 
+				64, 
+				this.CANVAS_RIGHT, 
+				80, 
+				64, 
+				64);
+		}
+
+
+		if(animation.frames_left) {
+			this.status_currentFrame = this.status_currentFrame % animation.frames_left.length;
+			let srcX2  = animation.frames_left[this.status_currentFrame].x;
+			let srcY2  = animation.frames_left[this.status_currentFrame].y;
+			
+			
+			// if first frame and left_fall > show food dropping animation before starting
+			if(this.status_currentFrame === 0 && animation.left_fall) {
+				this.isNestedPlaying = true;
+
+				let destY = 0;
+				let self = this;
+				function animateLeftFrames() {
+					if(destY < SCREEN_SIZE.HEIGHT-32) {
+						self.ctx?.clearRect(self.destX-20, destY-1, 32, 32);
+						self.ctx?.drawImage(self.spritesheet, 
+							srcX2, 
+							srcY2, 
+							64, 
+							64, 
+							self.destX-20, 
+							destY, 
+							32, 
+							32);
+						
+							destY+=1;
+
+						self.animRequestIDs.push(requestAnimationFrame(animateLeftFrames));
+					} else {
+						self.status_currentFrame++;
+						self.isNestedPlaying = false;
+						self.drawScreenAnimation();
+					}	
+				}
+				
+				animateLeftFrames();
+				//this.ctx?.clearRect(destX-20, destY-10, 32, 32);
+			} else {
 				this.ctx?.drawImage(this.spritesheet, 
 					srcX2, 
 					srcY2, 
 					64, 
 					64, 
-					this.CANVAS_RIGHT, 
-					80, 
-					64, 
-					64);
+					this.destX-20, 
+					SCREEN_SIZE.HEIGHT-32, 
+					32, 
+					32);
 			}
+		}
 
-			this.framesDrawn++;
-			this.movesFrameDrawn++;
+		if(this.isNestedPlaying) return;
 
-			// WHERE TO MOVE CURRENT SPRITE FRAME ALONG X AXIS
-			if(animation.drift && this.movesFrameDrawn >= 30) {
-				this.movesFrameDrawn = 0;
-				destX = destX + (randomInt(-1, 1) * 20)
+		this.framesDrawn++;
+		this.movesFrameDrawn++;
 
-				// Make sure sprite doesn't leave canvas
-				if(destX >= SCREEN_SIZE.WIDTH - spriteWidth) {
-					destX -= 20;
-				} else if (destX <= spriteWidth) {
-					destX += 20;
-				}
+		// WHERE TO MOVE CURRENT SPRITE FRAME ALONG X AXIS
+		if(animation.drift && this.movesFrameDrawn >= 30) {
+			this.movesFrameDrawn = 0;
+			destX = destX + (randomInt(-1, 1) * 20)
+
+			// Make sure sprite doesn't leave canvas
+			if(destX >= SCREEN_SIZE.WIDTH - spriteWidth) {
+				destX -= 20;
+			} else if (destX <= spriteWidth) {
+				destX += 20;
 			}
+		}
 
-			// WHICH SPRITE FRAME TO SHOW
-			if(this.framesDrawn >= this.frameLimit) {
-					this.currentFrame++;
-					this.status_currentFrame++;
-					this.framesDrawn = 0;
-					//frameLimit = getNewFrameLimit();
-				}
-		} // end of animate
+		// WHICH SPRITE FRAME TO SHOW
+		if(this.framesDrawn >= this.frameLimit) {
+			this.currentFrame++;
+			this.status_currentFrame++;
+			this.framesDrawn = 0;
+			//frameLimit = getNewFrameLimit();
+		}
+
+		let animRequestID = requestAnimationFrame(() => {this.animate(animation, spriteWidth, spriteHeight, destX)});
+		this.animRequestIDs.push(animRequestID);
+	} // end of animate
 
 		initContext() {
 			this.ctx = this.canvas!.getContext('2d');
@@ -143,10 +199,12 @@ export class ScreenComponent implements OnInit {
 		clearCanvasStopAnimation() {
 			clearCanvas(this.ctx);
 			//this.ctx = null
-			cancelAnimationFrame(this.animRequestID)
+this.cancelAnimations()
+			//cancelAnimationFrame(this.animRequestID)
 
 			// reset frame values
-			this.animRequestID = 0;
+			//this.animRequestID = 0;
+			this.animRequestIDs = [];
 			this.currentFrame = 0;
 			this.framesDrawn = 0;
 			this.frameLimit = 60;
@@ -173,6 +231,7 @@ export class ScreenComponent implements OnInit {
 
 		drawScreenAnimation() {
 			//let action = this.TamaService.getTamaAnimation();
+			clearCanvas(this.ctx);
 			let action = this.TamaService.actionSubject.getValue();
 			console.log("draw animation: " + action)
 			if(action !== "") {
@@ -185,6 +244,10 @@ export class ScreenComponent implements OnInit {
 	
 				this.animate(animation, spriteData.spriteWidth, spriteData.spriteHeight, this.destX);
 			}
+		}
+
+		cancelAnimations() { 
+			this.animRequestIDs.forEach((x) => cancelAnimationFrame(x));
 		}
 		
 	} 

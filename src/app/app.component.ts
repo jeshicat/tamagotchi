@@ -92,7 +92,9 @@ export class AppComponent  {
 			//if(this.openMenuScreen!.screens[0].callback) this.openMenuScreen!.screens[0].callback()
 		} else if (this.MenuServ.openMenuScreen !== null) { // Menu is open, do actionB from menu object
 			const screen = this.MenuServ.getMenuScreen();
-			if(screen.buttonB) { screen.buttonB(); };
+			if(screen.buttonB) { 			
+				this.screen_com.clearCanvasStopAnimation(); // might need to remove
+				screen.buttonB(); };
 		} else {
 			// show time
 			alert("time")
@@ -101,11 +103,10 @@ export class AppComponent  {
 
 	cancelMenu() {
 		// back to main menu / cancel
-		if(this.MenuServ.openMenuScreen !== null) {
+		if(this.MenuServ.openMenuScreen !== null || this.TamaServ.actionSubject.getValue() !== "default") {
+			this.screen_com.clearCanvasStopAnimation();
 			this.TamaServ.actionSubject.next("default")
-			//this.screen_com.clearCanvasStopAnimation();
 			this.MenuServ.openMenuScreen = null;
-			//this.screen_com.drawScreenAnimation(); // reshow tamagotchi
 		} else {
 			this.menu_com.clearMenuIcons();
 		}
