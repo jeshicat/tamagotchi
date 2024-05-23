@@ -11,7 +11,9 @@ export interface spriteData {
 export interface spriteFrameDetails {
 	frames: frameCoordinate[];
 	frames_status?: frameCoordinate[];
+	frames_left?: frameCoordinate[];
 	drift: boolean;
+	left_fall?:boolean;
 	stopAtFrameEnd?: boolean;
 }
 
@@ -44,13 +46,17 @@ const untypedData = JSON.parse(`{
 				"drift": true
 			},
 			"feed_meal" : {
-				"frames": [{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880}],
+				"frames": [{"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880}],
+				"frames_left":  [{"x" : 198, "y": 0}, {"x" : 265, "y": 0}, {"x" : 265, "y": 0}, {"x" : 328, "y": 0}, {"x" : 328, "y": 0}, {"x" : 1000, "y": 1000}, {"x" : 1000, "y": 1000}],
 				"drift": false,
+				"left_fall": true,
 				"stopAtFrameEnd": true
 			},
 			"feed_snack" : {
-				"frames": [{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880}],
+				"frames": 		[{"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880}],
+				"frames_left":  [{"x" : 1, "y": 0}, {"x" : 66, "y": 0}, {"x" : 66, "y": 0}, {"x" : 132, "y": 0}, {"x" : 132, "y": 0}, {"x" : 1000, "y": 1000}, {"x" : 1000, "y": 1000}],
 				"drift": false,
+				"left_fall": true,
 				"stopAtFrameEnd": true
 			},
 			"no" : {
