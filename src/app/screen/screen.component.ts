@@ -79,17 +79,7 @@ export class ScreenComponent implements OnInit {
 
 			console.log("action subscribe")
 			this.drawScreenAnimation()
-
-			//this.drawScreenAnimation();
-		}})
-
-		// this.currentFrame = 0;
-		// this.framesDrawn = 0; // records # of times the 'animate' function has been called
-		// this.frameLimit = 60; // frame limit should be 30, 60 or 90
-	
-		// // status frame counter
-		// this.status_currentFrame = 0;
-
+		}}) // end of action subscribe
 	} // end of OnInit
 
 	// Used to animate the sprites
@@ -133,10 +123,7 @@ export class ScreenComponent implements OnInit {
 
 			if(this.status_currentFrame === 0 && companion.doesFall) {
 				this.isNestedPlaying = true;
-		
 				this.animateTopToBottom(id, srcX2, srcY2)
-				
-				//this.ctx?.clearRect(destX-20, destY-10, 32, 32);
 			} else {
 				this.ctx?.drawImage(this.spritesheet, 
 					srcX2, 
@@ -151,78 +138,7 @@ export class ScreenComponent implements OnInit {
 			}
 		}); // end for each for companion sprites
 
-		
 		if(this.isNestedPlaying) return;
-		// status frames you show on upper right side of tama sprite
-		// if(animation.frames_status) {
-
-		// 	this.status_currentFrame = this.status_currentFrame % animation.frames_status.length;
-		// 	let srcX2  = animation.frames_status[this.status_currentFrame].x;
-		// 	let srcY2  = animation.frames_status[this.status_currentFrame].y;
-
-		// 	this.ctx?.drawImage(this.spritesheet, 
-		// 		srcX2, 
-		// 		srcY2, 
-		// 		64, 
-		// 		64, 
-		// 		this.CANVAS_RIGHT, 
-		// 		80, 
-		// 		64, 
-		// 		64);
-		// }
-
-
-		// if(animation.frames_left) {
-		// 	this.status_currentFrame = this.status_currentFrame % animation.frames_left.length;
-		// 	let srcX2  = animation.frames_left[this.status_currentFrame].x;
-		// 	let srcY2  = animation.frames_left[this.status_currentFrame].y;
-			
-			
-		// 	// if first frame and left_fall > show food dropping animation before starting
-		// 	if(this.status_currentFrame === 0 && animation.left_fall) {
-		// 		this.isNestedPlaying = true;
-
-		// 		let destY = 0;
-		// 		let self = this;
-		// 		function animateLeftFrames() {
-		// 			if(destY < SCREEN_SIZE.HEIGHT-32) {
-		// 				self.ctx?.clearRect(self.destX-20, destY-1, 32, 32);
-		// 				self.ctx?.drawImage(self.spritesheet, 
-		// 					srcX2, 
-		// 					srcY2, 
-		// 					64, 
-		// 					64, 
-		// 					self.destX-20, 
-		// 					destY, 
-		// 					32, 
-		// 					32);
-						
-		// 					destY+=1;
-
-		// 				self.animRequestIDs.push(requestAnimationFrame(animateLeftFrames));
-		// 			} else {
-		// 				self.status_currentFrame++;
-		// 				self.isNestedPlaying = false;
-		// 				self.drawScreenAnimation();
-		// 			}	
-		// 		}
-				
-		// 		animateLeftFrames();
-		// 		//this.ctx?.clearRect(destX-20, destY-10, 32, 32);
-		// 	} else {
-		// 		this.ctx?.drawImage(this.spritesheet, 
-		// 			srcX2, 
-		// 			srcY2, 
-		// 			64, 
-		// 			64, 
-		// 			this.destX-20, 
-		// 			SCREEN_SIZE.HEIGHT-32, 
-		// 			32, 
-		// 			32);
-		// 	}
-		// }
-
-		// if(this.isNestedPlaying) return;
 
 		this.framesDrawn++;
 		this.movesFrameDrawn++;
@@ -283,12 +199,9 @@ export class ScreenComponent implements OnInit {
 
 		clearCanvasStopAnimation() {
 			clearCanvas(this.ctx);
-			//this.ctx = null
 			this.cancelAnimations()
-			//cancelAnimationFrame(this.animRequestID)
 
 			// reset frame values
-			//this.animRequestID = 0;
 			this.animRequestIDs = [];
 			this.currentFrame = 0;
 			this.framesDrawn = 0;
@@ -316,22 +229,6 @@ export class ScreenComponent implements OnInit {
 
 		 drawScreenAnimation() {
 			this.animate();
-		// 	//let action = this.TamaService.getTamaAnimation();
-		// 	clearCanvas(this.ctx);
-		// 	let action = this.TamaService.getActionSubject()
-
-		// 	console.log(`draw animation: ${action.main} ${action.add_ons.length > 0?action.add_ons[0]: ""}`)
-
-		// 	if(action.main !== "") {
-		// 		if(this.ctx === null) {
-		// 			this.initContext()
-		// 		}
-
-		// 		const spriteData = spriteMap[this.tName]
-		// 		const animation = spriteData.actions[action.main];
-	
-		// 		this.animate(animation, spriteData.spriteWidth, spriteData.spriteHeight, this.destX);
-		// 	}
 		 }
 
 		cancelAnimations() { 
