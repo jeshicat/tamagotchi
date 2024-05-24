@@ -2,17 +2,6 @@ import { Injectable, signal } from '@angular/core';
 import { MyTamagotchi } from './interfaces/tamagotchi';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-interface iAction {
-	main: string,
-	add_ons: string[],
-	status: string[]
-}
-
-interface iAlert {
-	alert: boolean,
-	alertTime?: Date
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -112,4 +101,25 @@ export class TamagotchiService {
 
 		this.actionSubject.next(updated)
 	}
+
+	increaseHunger() {
+		let count = this.hungerCount.getValue();
+		this.hungerCount.next(++count);
+	}
+
+	decreaseHunger() {
+		let count = this.hungerCount.getValue();
+		this.hungerCount.next(--count);
+	}
+}
+
+interface iAction {
+	main: string,
+	add_ons: string[],
+	status: string[]
+}
+
+interface iAlert {
+	alert: boolean,
+	alertTime?: Date
 }

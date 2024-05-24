@@ -172,6 +172,17 @@ const untypedCompanionData = JSON.parse(`{
 		"isLeft": true,
 		"doesFall": true
 	}, 
+	"meal_full": {
+		"spriteWidth": 64,
+		"spriteHeight": 64,
+		"destWidth": 32,
+		"destHeight": 32,
+		"destX" : ${((SCREEN_SIZE.WIDTH / 2) - 60)},
+		"destY" : ${SCREEN_SIZE.HEIGHT - 32},
+		"frames":  [{"x" : 198, "y": 0},{"x" : 198, "y": 0},{"x" : 198, "y": 0},{"x" : 198, "y": 0},{"x" : 198, "y": 0},{"x" : 198, "y": 0},{"x" : 198, "y": 0},{"x" : 198, "y": 0}],
+		"isLeft": true,
+		"doesFall": true
+	}, 
 	"snack": {
 		"spriteWidth": 64,
 		"spriteHeight": 64,
@@ -180,6 +191,17 @@ const untypedCompanionData = JSON.parse(`{
 		"destX" : ${((SCREEN_SIZE.WIDTH / 2) - 60)},
 		"destY" : ${SCREEN_SIZE.HEIGHT - 32},
 		"frames": [{"x" : 1, "y": 0}, {"x" : 1, "y": 0}, {"x" : 67, "y": 0}, {"x" : 67, "y": 0}, {"x" : 132, "y": 0}, {"x" : 132, "y": 0}, {"x" : 1000, "y": 1000}, {"x" : 1000, "y": 1000}],
+		"isLeft": true,
+		"doesFall": true
+	}, 
+	"snack_full": {
+		"spriteWidth": 64,
+		"spriteHeight": 64,
+		"destWidth": 32,
+		"destHeight": 32,
+		"destX" : ${((SCREEN_SIZE.WIDTH / 2) - 60)},
+		"destY" : ${SCREEN_SIZE.HEIGHT - 32},
+		"frames": [{"x" : 1, "y": 0},{"x" : 1, "y": 0},{"x" : 1, "y": 0},{"x" : 1, "y": 0},{"x" : 1, "y": 0},{"x" : 1, "y": 0},{"x" : 1, "y": 0}],
 		"isLeft": true,
 		"doesFall": true
 	}, 

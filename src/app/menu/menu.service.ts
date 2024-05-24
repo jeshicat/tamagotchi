@@ -374,14 +374,15 @@ export class MenuService {
 
 	triggerActionFeed(isMeal: boolean = true) {
 		this.openMenuScreen = null;
-		if(this.TamaService.myTama.hunger < this.TamaService.maxHunger) {
+		let hunger = this.TamaService.hungerCount.getValue();
+		if(hunger < this.TamaService.maxHunger) {
 			if (isMeal){
-				this.TamaService.myTama.hunger++;
+				this.TamaService.increaseHunger();
 				this.TamaService.myTama.weight++;
 				// burger animation
 				this.TamaService.updateAction("eat", "meal");
 			} else if(!isMeal) {
-				this.TamaService.myTama.hunger++;
+				this.TamaService.increaseHunger();
 				this.TamaService.myTama.happiness++;
 				this.TamaService.myTama.weight+=2; // adds additional 1lb
 				// cake animation
@@ -390,9 +391,10 @@ export class MenuService {
 			}
 	 	} else {
 			// shake head no animation because not hungry
-			this.TamaService.updateAction("eat", isMeal ? "meal" : "snack");
+			this.TamaService.updateAction("no", isMeal ? "meal_full" : "snack_full");
 		}
 		
+		console.log("hunger: " + this.TamaService.hungerCount.getValue())
 		
 		// Check if hungry...
 		// YES ... 
