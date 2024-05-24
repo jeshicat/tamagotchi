@@ -2,6 +2,17 @@ import { Injectable, signal } from '@angular/core';
 import { MyTamagotchi } from './interfaces/tamagotchi';
 import { BehaviorSubject, Observable } from 'rxjs';
 
+interface iAction {
+	main: string,
+	add_ons: string[],
+	status: string[]
+}
+
+interface iAlert {
+	alert: boolean,
+	alertTime?: Date
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -9,8 +20,22 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class TamagotchiService {
 	myTama: MyTamagotchi;
 
-	actionSubject = new BehaviorSubject("default");
+	action: iAction = {
+		main: "default", 
+		status: [],
+		add_ons: []
+	}
+	actionSubject = new BehaviorSubject<iAction>(this.action);
 
+	alert: iAlert = { alert: false }
+	alertSubject = new BehaviorSubject<iAlert>(this.alert)
+
+	poopCount = new BehaviorSubject<number>(0);
+	hungerCount = new BehaviorSubject<number>(0);
+	happyCount  = new BehaviorSubject<number>(0);
+	disciplineCount = new BehaviorSubject<number>(0);
+
+	maxPoop = 4;
 	maxHunger = 4;
 	maxHappiness = 4;
 	maxDiscipline = 100;
@@ -50,5 +75,41 @@ export class TamagotchiService {
 
 	addCareMistakes() {
 		this.myTama.careMistakes++;
+	}
+
+	getActionSubject() {
+		return this.actionSubject.getValue()
+	}
+
+	updateAction(main: string, add_on?: string) {
+		const current = this.actionSubject.getValue()
+
+		const updated: iAction = {
+			...current,
+			main: main,
+			add_ons: []
+		}
+
+		if(add_on) updated.add_ons.push(add_on)
+		this.actionSubject.next(updated)
+	}
+
+	addActionStatus(status: string) {
+		const current = this.actionSubject.getValue()
+		const updated: iAction = { ...current }
+		updated.status.push(status)
+
+		this.actionSubject.next(updated)
+	}
+
+	clearActionStatus(status: string) {
+		const current = this.actionSubject.getValue()
+
+		const updated: iAction = { 
+			...current,
+			status: current.status.filter(e => e !== status)
+		}
+
+		this.actionSubject.next(updated)
 	}
 }

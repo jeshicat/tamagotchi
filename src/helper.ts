@@ -1,6 +1,7 @@
 //export const CANVAS_SIZE = { WIDTH : 330, HEIGHT : 314}
 export const CANVAS_SIZE = { WIDTH : 212, HEIGHT : 200}
 export const SCREEN_SIZE = { WIDTH: 207, HEIGHT: 107}
+export const SCREEN_RIGHT = SCREEN_SIZE.WIDTH / 1.3
 
 // returns a random number between supplied min and max numbers
 export function randomInt(min:number, max:number) { // min and max included 

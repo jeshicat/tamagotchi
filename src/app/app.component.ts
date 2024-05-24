@@ -84,7 +84,7 @@ export class AppComponent  {
 			if(this.MenuServ.openMenuScreen!.screens[0].drawItems) {
 				// clear screen canvas and stop animation
 				//this.screen_com.clearCanvasStopAnimation()
-				this.TamaServ.actionSubject.next("");
+				this.TamaServ.updateAction("")
 				this.screen_com.drawMenu(this.MenuServ.openMenuScreen!.screens[0].drawItems!)
 			}
 
@@ -93,7 +93,7 @@ export class AppComponent  {
 		} else if (this.MenuServ.openMenuScreen !== null) { // Menu is open, do actionB from menu object
 			const screen = this.MenuServ.getMenuScreen();
 			if(screen.buttonB) { 			
-				this.screen_com.clearCanvasStopAnimation(); // might need to remove
+				this.screen_com.clearCanvasStopAnimation(); // might need to remve
 				screen.buttonB(); };
 		} else {
 			// show time
@@ -103,9 +103,10 @@ export class AppComponent  {
 
 	cancelMenu() {
 		// back to main menu / cancel
-		if(this.MenuServ.openMenuScreen !== null || this.TamaServ.actionSubject.getValue() !== "default") {
+		if(this.MenuServ.openMenuScreen !== null || this.TamaServ.actionSubject.getValue().main !== "default") {
 			this.screen_com.clearCanvasStopAnimation();
-			this.TamaServ.actionSubject.next("default")
+			this.TamaServ.updateAction("default")
+
 			this.MenuServ.openMenuScreen = null;
 		} else {
 			this.menu_com.clearMenuIcons();

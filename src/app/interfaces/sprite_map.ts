@@ -1,26 +1,54 @@
-export interface spriteData {
+import { SCREEN_RIGHT, SCREEN_SIZE } from "../../helper";
+
+export interface ISpriteData {
 	[name: string]: {
 		spriteWidth: number;
 		spriteHeight: number;
 		actions: {
-			[type: string]: spriteFrameDetails;
+			[type: string]: ISpriteFrameDetails;
 		};
 	}
 }
 
-export interface spriteFrameDetails {
-	frames: frameCoordinate[];
-	frames_status?: frameCoordinate[];
-	frames_left?: frameCoordinate[];
+export interface ISpriteFrameDetails {
+	frames: IFrameCoordinate[];
 	drift: boolean;
-	left_fall?:boolean;
 	stopAtFrameEnd?: boolean;
 }
 
-interface frameCoordinate {
+export interface ISpriteFrameDetails {
+	frames: IFrameCoordinate[];
+	drift: boolean;
+	stopAtFrameEnd?: boolean;
+}
+
+export interface ICompanionSpriteData {
+	[name: string]: {
+		spriteWidth: number;
+		spriteHeight: number;
+		destWidth?: number;
+		destHeight?: number;
+		destX: number;
+		destY: number;
+		frames: IFrameCoordinate[],
+		isLeft: boolean;
+		doesFall: boolean;
+	}
+}
+
+interface IFrameCoordinate {
 	x: number;
 	y: number;
 }
+// export interface spriteFrameDetails {
+// 	frames: frameCoordinate[];
+// 	frames_status?: frameCoordinate[];
+// 	frames_left?: frameCoordinate[];
+// 	drift: boolean;
+// 	left_fall?:boolean;
+// 	stopAtFrameEnd?: boolean;
+// }
+
 
 const untypedData = JSON.parse(`{
 	"egg" : {
@@ -45,18 +73,9 @@ const untypedData = JSON.parse(`{
 				"frames": [{"x" : 0, "y": 880}, {"x" : 132, "y": 880}, {"x" : 264, "y": 880}, {"x" : 396, "y": 880}],
 				"drift": true
 			},
-			"feed_meal" : {
+			"eat" : {
 				"frames": [{"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880}],
-				"frames_left":  [{"x" : 198, "y": 0},{"x" : 198, "y": 0}, {"x" : 265, "y": 0}, {"x" : 265, "y": 0}, {"x" : 328, "y": 0}, {"x" : 328, "y": 0}, {"x" : 1000, "y": 1000}, {"x" : 1000, "y": 1000}],
 				"drift": false,
-				"left_fall": true,
-				"stopAtFrameEnd": true
-			},
-			"feed_snack" : {
-				"frames": 		[{"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880},{"x" : 520, "y": 880}, {"x" : 650, "y": 880}],
-				"frames_left":  [{"x" : 1, "y": 0}, {"x" : 1, "y": 0}, {"x" : 66, "y": 0}, {"x" : 66, "y": 0}, {"x" : 132, "y": 0}, {"x" : 132, "y": 0}, {"x" : 1000, "y": 1000}, {"x" : 1000, "y": 1000}],
-				"drift": false,
-				"left_fall": true,
 				"stopAtFrameEnd": true
 			},
 			"no" : {
@@ -85,7 +104,6 @@ const untypedData = JSON.parse(`{
 			},
 			"sick" :  {
 				"frames": [{"x" : 264, "y": 1012}, {"x" : 132, "y": 1012}],
-				"frames_status": [{"x": 595, "y": 0}, {"x" : 400, "y": 0}],
 				"drift": false
 			}
 		}
@@ -140,5 +158,42 @@ const untypedData = JSON.parse(`{
 	}
 }`);
 
-export const spriteMap: spriteData = untypedData;
+export const spriteMap: ISpriteData = untypedData;
+
+const untypedCompanionData = JSON.parse(`{
+	"meal": {
+		"spriteWidth": 64,
+		"spriteHeight": 64,
+		"destWidth": 32,
+		"destHeight": 32,
+		"destX" : ${((SCREEN_SIZE.WIDTH / 2) - 60)},
+		"destY" : ${SCREEN_SIZE.HEIGHT - 32},
+		"frames":  [{"x" : 198, "y": 0},{"x" : 198, "y": 0}, {"x" : 265, "y": 0}, {"x" : 265, "y": 0}, {"x" : 328, "y": 0}, {"x" : 328, "y": 0}, {"x" : 1000, "y": 1000}, {"x" : 1000, "y": 1000}],
+		"isLeft": true,
+		"doesFall": true
+	}, 
+	"snack": {
+		"spriteWidth": 64,
+		"spriteHeight": 64,
+		"destWidth": 32,
+		"destHeight": 32,
+		"destX" : ${((SCREEN_SIZE.WIDTH / 2) - 60)},
+		"destY" : ${SCREEN_SIZE.HEIGHT - 32},
+		"frames": [{"x" : 1, "y": 0}, {"x" : 1, "y": 0}, {"x" : 67, "y": 0}, {"x" : 67, "y": 0}, {"x" : 132, "y": 0}, {"x" : 132, "y": 0}, {"x" : 1000, "y": 1000}, {"x" : 1000, "y": 1000}],
+		"isLeft": true,
+		"doesFall": true
+	}, 
+	"sick": {
+		"spriteWidth": 64,
+		"spriteHeight": 64,
+		"destX" : ${SCREEN_RIGHT},
+		"destY" : ${80},
+		"frames": [{"x": 595, "y": 0}, {"x" : 400, "y": 0}],
+		"isLeft": false,
+		"doesFall": false
+	}
+}`)
+	
+export const companionSpriteMap: ICompanionSpriteData = untypedCompanionData;
+
 

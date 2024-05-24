@@ -379,17 +379,18 @@ export class MenuService {
 				this.TamaService.myTama.hunger++;
 				this.TamaService.myTama.weight++;
 				// burger animation
-				this.TamaService.actionSubject.next("feed_meal");
+				this.TamaService.updateAction("eat", "meal");
 			} else if(!isMeal) {
 				this.TamaService.myTama.hunger++;
 				this.TamaService.myTama.happiness++;
 				this.TamaService.myTama.weight+=2; // adds additional 1lb
 				// cake animation
-				this.TamaService.actionSubject.next("feed_snack");
+
+				this.TamaService.updateAction("eat", "snack");
 			}
 	 	} else {
 			// shake head no animation because not hungry
-			this.TamaService.actionSubject.next("no");
+			this.TamaService.updateAction("eat", isMeal ? "meal" : "snack");
 		}
 		
 		

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
-import { spriteMap, spriteData, spriteFrameDetails } from '../interfaces/sprite_map';
+import { spriteMap, companionSpriteMap, ISpriteData, ICompanionSpriteData } from '../interfaces/sprite_map';
 import { menuContextParams } from '../interfaces/menu_icon_map';
 import { SCREEN_SIZE, clearCanvas, randomInt } from '../../helper';
 import { TamagotchiService } from '../tamagotchi.service';
@@ -29,7 +29,6 @@ export class ScreenComponent implements OnInit {
 
 	// TODO CHANGE TO USE SERVICE CLASS
 	tName = "shirobabytchi";
-	action = "default"
 
 	currentFrame = 0;
 	framesDrawn = 0; // records # of times the 'animate' function has been called
@@ -41,9 +40,15 @@ export class ScreenComponent implements OnInit {
 
 	status_currentFrame = 0; // "status" frame counter
 
+	action = "default";
+	action_companions: string[];
+
 	constructor() {
 		this.canvas = null;
 		this.ctx = null;
+
+		this.action_companions = [];
+
 	}
 
 	ngOnInit() : void {
@@ -56,7 +61,26 @@ export class ScreenComponent implements OnInit {
 		this.initContext();
 
 		this.TamaService.actionSubject.subscribe({next: (e) => {
-			this.drawScreenAnimation();
+
+			this.cancelAnimations()
+
+			if(e.main === "" ) return
+			
+			this.action = e.main;
+			if(e.main === "default") { 
+				this.action_companions = e.status;
+			} else {
+				this.action_companions = e.add_ons;
+			}
+
+			if(e.main !== "" && this.ctx === null) {
+				this.initContext()
+			}
+
+			console.log("action subscribe")
+			this.drawScreenAnimation()
+
+			//this.drawScreenAnimation();
 		}})
 
 		// this.currentFrame = 0;
@@ -71,98 +95,134 @@ export class ScreenComponent implements OnInit {
 	// Used to animate the sprites
 	isNestedPlaying = false;
 
-	animate(animation: spriteFrameDetails, spriteWidth: number, spriteHeight:number, destX: number) {
+	//animate(animation: spriteFrameDetails, spriteWidth: number, spriteHeight:number, destX: number) {
+	animate() {
 		clearCanvas(this.ctx);
+
+		const spriteData = spriteMap[this.tName]
+		const animation = spriteData.actions[this.action];
+
 		this.currentFrame = this.currentFrame % animation.frames.length;
-		let srcX = animation.frames[this.currentFrame].x;
-		let srcY = animation.frames[this.currentFrame].y;
 
 		if(animation.stopAtFrameEnd && this.currentFrame === animation.frames.length-1) {
-			this.TamaService.actionSubject.next("default")
+			this.TamaService.updateAction("default")
 			return;
 		}
+
+		let srcX = animation.frames[this.currentFrame].x;
+		let srcY = animation.frames[this.currentFrame].y;
 
 		// ctx?.drawImage(tamaImage, srcX, srcY, srcW, srcH, destX, destY, destW, destH);
 		this.ctx?.drawImage(this.spritesheet, 
 			srcX, 
 			srcY, 
-			spriteWidth, 
-			spriteHeight, 
-			destX, 
+			spriteData.spriteWidth, 
+			spriteData.spriteHeight, 
+			this.destX, 
 			this.CANVAS_MIDDLE, 
-			spriteWidth/2, 
-			spriteHeight/2);
+			spriteData.spriteWidth/2, 
+			spriteData.spriteHeight/2);
 		
-		// status frames you show on upper right side of tama sprite
-		if(animation.frames_status) {
+		const actionDetails = this.TamaService.getActionSubject();
+		
+		actionDetails.add_ons?.forEach((id) => {
+			let companion = companionSpriteMap[id]
+			this.status_currentFrame = this.status_currentFrame % companion.frames.length;
+			let srcX2  = companion.frames[this.status_currentFrame].x;
+			let srcY2  = companion.frames[this.status_currentFrame].y;
 
-			this.status_currentFrame = this.status_currentFrame % animation.frames_status.length;
-			let srcX2  = animation.frames_status[this.status_currentFrame].x;
-			let srcY2  = animation.frames_status[this.status_currentFrame].y;
-
-			this.ctx?.drawImage(this.spritesheet, 
-				srcX2, 
-				srcY2, 
-				64, 
-				64, 
-				this.CANVAS_RIGHT, 
-				80, 
-				64, 
-				64);
-		}
-
-
-		if(animation.frames_left) {
-			this.status_currentFrame = this.status_currentFrame % animation.frames_left.length;
-			let srcX2  = animation.frames_left[this.status_currentFrame].x;
-			let srcY2  = animation.frames_left[this.status_currentFrame].y;
-			
-			
-			// if first frame and left_fall > show food dropping animation before starting
-			if(this.status_currentFrame === 0 && animation.left_fall) {
+			if(this.status_currentFrame === 0 && companion.doesFall) {
 				this.isNestedPlaying = true;
-
-				let destY = 0;
-				let self = this;
-				function animateLeftFrames() {
-					if(destY < SCREEN_SIZE.HEIGHT-32) {
-						self.ctx?.clearRect(self.destX-20, destY-1, 32, 32);
-						self.ctx?.drawImage(self.spritesheet, 
-							srcX2, 
-							srcY2, 
-							64, 
-							64, 
-							self.destX-20, 
-							destY, 
-							32, 
-							32);
-						
-							destY+=1;
-
-						self.animRequestIDs.push(requestAnimationFrame(animateLeftFrames));
-					} else {
-						self.status_currentFrame++;
-						self.isNestedPlaying = false;
-						self.drawScreenAnimation();
-					}	
-				}
+		
+				this.animateTopToBottom(id, srcX2, srcY2)
 				
-				animateLeftFrames();
 				//this.ctx?.clearRect(destX-20, destY-10, 32, 32);
 			} else {
 				this.ctx?.drawImage(this.spritesheet, 
 					srcX2, 
 					srcY2, 
-					64, 
-					64, 
-					this.destX-20, 
-					SCREEN_SIZE.HEIGHT-32, 
-					32, 
-					32);
+					companion.spriteWidth, 
+					companion.spriteHeight, 
+					companion.destX,
+					companion.destY, 
+					(companion.destWidth ? companion.destWidth : companion.spriteWidth), 
+					(companion.destHeight ? companion.destHeight : companion.spriteHeight)
+				);
 			}
-		}
+		}); // end for each for companion sprites
 
+		
 		if(this.isNestedPlaying) return;
+		// status frames you show on upper right side of tama sprite
+		// if(animation.frames_status) {
+
+		// 	this.status_currentFrame = this.status_currentFrame % animation.frames_status.length;
+		// 	let srcX2  = animation.frames_status[this.status_currentFrame].x;
+		// 	let srcY2  = animation.frames_status[this.status_currentFrame].y;
+
+		// 	this.ctx?.drawImage(this.spritesheet, 
+		// 		srcX2, 
+		// 		srcY2, 
+		// 		64, 
+		// 		64, 
+		// 		this.CANVAS_RIGHT, 
+		// 		80, 
+		// 		64, 
+		// 		64);
+		// }
+
+
+		// if(animation.frames_left) {
+		// 	this.status_currentFrame = this.status_currentFrame % animation.frames_left.length;
+		// 	let srcX2  = animation.frames_left[this.status_currentFrame].x;
+		// 	let srcY2  = animation.frames_left[this.status_currentFrame].y;
+			
+			
+		// 	// if first frame and left_fall > show food dropping animation before starting
+		// 	if(this.status_currentFrame === 0 && animation.left_fall) {
+		// 		this.isNestedPlaying = true;
+
+		// 		let destY = 0;
+		// 		let self = this;
+		// 		function animateLeftFrames() {
+		// 			if(destY < SCREEN_SIZE.HEIGHT-32) {
+		// 				self.ctx?.clearRect(self.destX-20, destY-1, 32, 32);
+		// 				self.ctx?.drawImage(self.spritesheet, 
+		// 					srcX2, 
+		// 					srcY2, 
+		// 					64, 
+		// 					64, 
+		// 					self.destX-20, 
+		// 					destY, 
+		// 					32, 
+		// 					32);
+						
+		// 					destY+=1;
+
+		// 				self.animRequestIDs.push(requestAnimationFrame(animateLeftFrames));
+		// 			} else {
+		// 				self.status_currentFrame++;
+		// 				self.isNestedPlaying = false;
+		// 				self.drawScreenAnimation();
+		// 			}	
+		// 		}
+				
+		// 		animateLeftFrames();
+		// 		//this.ctx?.clearRect(destX-20, destY-10, 32, 32);
+		// 	} else {
+		// 		this.ctx?.drawImage(this.spritesheet, 
+		// 			srcX2, 
+		// 			srcY2, 
+		// 			64, 
+		// 			64, 
+		// 			this.destX-20, 
+		// 			SCREEN_SIZE.HEIGHT-32, 
+		// 			32, 
+		// 			32);
+		// 	}
+		// }
+
+		// if(this.isNestedPlaying) return;
 
 		this.framesDrawn++;
 		this.movesFrameDrawn++;
@@ -170,13 +230,13 @@ export class ScreenComponent implements OnInit {
 		// WHERE TO MOVE CURRENT SPRITE FRAME ALONG X AXIS
 		if(animation.drift && this.movesFrameDrawn >= 30) {
 			this.movesFrameDrawn = 0;
-			destX = destX + (randomInt(-1, 1) * 20)
+			this.destX = this.destX + (randomInt(-1, 1) * 20)
 
 			// Make sure sprite doesn't leave canvas
-			if(destX >= SCREEN_SIZE.WIDTH - spriteWidth) {
-				destX -= 20;
-			} else if (destX <= spriteWidth) {
-				destX += 20;
+			if(this.destX >= SCREEN_SIZE.WIDTH - spriteData.spriteWidth) {
+				this.destX -= 20;
+			} else if (this.destX <= spriteData.spriteWidth) {
+				this.destX += 20;
 			}
 		}
 
@@ -187,10 +247,35 @@ export class ScreenComponent implements OnInit {
 			this.framesDrawn = 0;
 			//frameLimit = getNewFrameLimit();
 		}
-
-		let animRequestID = requestAnimationFrame(() => {this.animate(animation, spriteWidth, spriteHeight, destX)});
-		this.animRequestIDs.push(animRequestID);
+	const rid = requestAnimationFrame(() => {this.animate()})
+		this.animRequestIDs.push(rid)
 	} // end of animate
+
+	animateTopToBottom(id: string, srcX: number, srcY: number, destY: number = 0) {
+		const companion = companionSpriteMap[id]
+
+		if(destY < companion.destY) {
+				this.ctx?.clearRect(this.destX-20, destY-1, companion.destWidth!, companion.destHeight!);
+				this.ctx?.drawImage(this.spritesheet, 
+					srcX, 
+					srcY, 
+					companion.spriteWidth, 
+					companion.spriteHeight, 
+					companion.destX,
+					destY, 
+					(companion.destWidth ? companion.destWidth : companion.spriteWidth), 
+					(companion.destHeight ? companion.destHeight : companion.spriteHeight)
+				);
+				
+				destY+=1;
+
+				this.animRequestIDs.push(requestAnimationFrame(() => {this.animateTopToBottom(id, srcX, srcY, destY)}));
+			} else {
+				this.status_currentFrame++;
+				this.isNestedPlaying = false;
+				this.animRequestIDs.push(requestAnimationFrame(() => {this.animate()}));
+			}	
+		}
 
 		initContext() {
 			this.ctx = this.canvas!.getContext('2d');
@@ -199,7 +284,7 @@ export class ScreenComponent implements OnInit {
 		clearCanvasStopAnimation() {
 			clearCanvas(this.ctx);
 			//this.ctx = null
-this.cancelAnimations()
+			this.cancelAnimations()
 			//cancelAnimationFrame(this.animRequestID)
 
 			// reset frame values
@@ -229,22 +314,25 @@ this.cancelAnimations()
 			})
 		}
 
-		drawScreenAnimation() {
-			//let action = this.TamaService.getTamaAnimation();
-			clearCanvas(this.ctx);
-			let action = this.TamaService.actionSubject.getValue();
-			console.log("draw animation: " + action)
-			if(action !== "") {
-				if(this.ctx === null) {
-					this.initContext()
-				}
+		 drawScreenAnimation() {
+			this.animate();
+		// 	//let action = this.TamaService.getTamaAnimation();
+		// 	clearCanvas(this.ctx);
+		// 	let action = this.TamaService.getActionSubject()
 
-				const spriteData = spriteMap[this.tName]
-				const animation = spriteData.actions[action];
+		// 	console.log(`draw animation: ${action.main} ${action.add_ons.length > 0?action.add_ons[0]: ""}`)
+
+		// 	if(action.main !== "") {
+		// 		if(this.ctx === null) {
+		// 			this.initContext()
+		// 		}
+
+		// 		const spriteData = spriteMap[this.tName]
+		// 		const animation = spriteData.actions[action.main];
 	
-				this.animate(animation, spriteData.spriteWidth, spriteData.spriteHeight, this.destX);
-			}
-		}
+		// 		this.animate(animation, spriteData.spriteWidth, spriteData.spriteHeight, this.destX);
+		// 	}
+		 }
 
 		cancelAnimations() { 
 			this.animRequestIDs.forEach((x) => cancelAnimationFrame(x));
