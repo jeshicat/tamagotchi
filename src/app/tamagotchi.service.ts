@@ -21,7 +21,7 @@ export class TamagotchiService {
 
 	poopCount = new BehaviorSubject<number>(0);
 	hungerCount = new BehaviorSubject<number>(0);
-	happyCount  = new BehaviorSubject<number>(0);
+	happinessCount  = new BehaviorSubject<number>(0);
 	disciplineCount = new BehaviorSubject<number>(0);
 
 	maxPoop = 4;
@@ -104,12 +104,40 @@ export class TamagotchiService {
 
 	increaseHunger() {
 		let count = this.hungerCount.getValue();
+		if(++count > this.maxHunger) return;
 		this.hungerCount.next(++count);
 	}
 
 	decreaseHunger() {
 		let count = this.hungerCount.getValue();
+		if(count === 0) return;
 		this.hungerCount.next(--count);
+	}
+
+	increaseHappiness() {
+		let count = this.happinessCount.getValue();
+		if(++count > this.maxHappiness) return;
+		this.happinessCount.next(++count);
+	}
+
+	decreaseHappiness() {
+		let count = this.happinessCount.getValue();
+		if(count === 0) return;
+		this.happinessCount.next(--count);
+	}
+
+	increaseDiscipline() {
+		let count = this.disciplineCount.getValue();
+		if(count === this.maxDiscipline) return;
+		count += 25;
+		this.happinessCount.next(count);
+	}
+
+	decreaseDiscipline() {
+		let count = this.happinessCount.getValue();
+		if(count === 0) return;
+		count -= 25;
+		this.happinessCount.next(count);
 	}
 }
 
