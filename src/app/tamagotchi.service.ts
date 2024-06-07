@@ -286,6 +286,7 @@ export class TamagotchiService {
 	maxHappiness = 4;
 	maxDiscipline = 100;
 
+	sleepTimerIntervalID: NodeJS.Timeout | null = null;
 
 	constructor() {
 
@@ -319,6 +320,11 @@ export class TamagotchiService {
 	}
 
 	setSleepTimer(putToSleep: boolean, tama: Tamagotchi | undefined) : void {
+		// if setTimer is called and the sleep timer exists, clear it. (ie. if tama evolved and needs new sleep timer)
+		if(this.sleepTimerIntervalID !== null) {
+			clearInterval(this.sleepTimerIntervalID)
+		}
+
 		if(tama === undefined){
 			tama = this.getTamagotchiDetails();
 			if(tama === undefined || tama?.sleepTime === 0) return;
@@ -332,7 +338,7 @@ export class TamagotchiService {
 		let diffMills =  newMills.getTime() - Date.now();
 		console.log(`${putToSleep ? "wake up in.." : "bed time in.."} ${diffMills}`)
 	
-		setTimeout(() =>{
+		this.sleepTimerIntervalID = setTimeout(() =>{
 			this.isSleepingSubject.next(!this.isSleepingSubject.getValue());
 		}, diffMills);
 	}
@@ -510,6 +516,7 @@ export class TamagotchiService {
 
 		this.updateAction(action);
 		this.setEvolutionTimer();
+		this.setSleepTimer(this.isSleepingSubject.getValue(), undefined)
 	}
 
 	// setIsSleepingTimer() {
