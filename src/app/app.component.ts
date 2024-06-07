@@ -40,7 +40,7 @@ export class AppComponent  {
 			idx++;
 
 			// resets index if reach end of icons
-			if(idx === menuNavIcons.length) {
+			if(idx === menuNavIcons.length-1) {
 				idx = 0;
 			}
 
