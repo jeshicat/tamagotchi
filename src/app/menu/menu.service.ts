@@ -161,18 +161,69 @@ export class MenuService {
 		}, { // Lights
 			id: 1, 
 			screens: [{
-				drawItems: [], // ON / OFF
-				buttonA: () => {
-					// Move arrow between On and Off
-				},
+				drawItems: [{ // ON
+					srcX: 64, 
+					srcY: 200,
+					spriteWidth: 100,
+					spriteHeight: 64,
+					destX: 57,
+					destY: 0,
+					destWidth: 100/this.spriteScale,
+					destHeight: 64/this.spriteScale
+				}, { // OFF
+					srcX: 200, 
+					srcY: 200,
+					spriteWidth: 120,
+					spriteHeight: 64,
+					destX: 57,
+					destY: 50,
+					destWidth: 120/this.spriteScale,
+					destHeight: 64/this.spriteScale
+				} ,{ // ARROW UP
+					srcX: 850, 
+					srcY: 0,
+					spriteWidth: 64,
+					spriteHeight: 64,
+					destX: 5,
+					destY: 5,
+					destWidth: 64/1.4,
+					destHeight: 64/1.4
+				}], // ON / OFF
 				buttonB: () => {
-					// If OFF, change to either black screen or black screen with Zzz
-					// If ON, turn screen back 'on', show tama + statuses + poo
+					this.triggerActionLights(false);
 				},
-				buttonC: () => {
-					// Cancel menu
-					// Clear canvas, show "main" animation + status + poo
-				}
+			}, {
+				drawItems: [{ // ON
+					srcX: 64, 
+					srcY: 200,
+					spriteWidth: 100,
+					spriteHeight: 64,
+					destX: 57,
+					destY: 0,
+					destWidth: 100/this.spriteScale,
+					destHeight: 64/this.spriteScale
+				}, { // OFF
+					srcX: 200, 
+					srcY: 200,
+					spriteWidth: 120,
+					spriteHeight: 64,
+					destX: 57,
+					destY: 50,
+					destWidth: 120/this.spriteScale,
+					destHeight: 64/this.spriteScale
+				} ,{ // ARROW DOWN
+					srcX: 850, 
+					srcY: 0,
+					spriteWidth: 64,
+					spriteHeight: 64,
+					destX: 5,
+					destY: 50,
+					destWidth: 64/1.4,
+					destHeight: 64/1.4
+				}], // ON / OFF
+				buttonB: () => {
+					this.triggerActionLights(true);
+				},
 			}]
 		}, { // Play
 			id: 2, 
@@ -359,32 +410,30 @@ export class MenuService {
 		return screen
 	}
 
-	cycleMenuScreens(callback: Function) {
-		let curMenu = this.menus[this.currentMenu.menuId];
-		this.currentMenu.screenIdx++;
+	// cycleMenuScreens(callback: Function) {
+	// 	let curMenu = this.menus[this.currentMenu.menuId];
+	// 	this.currentMenu.screenIdx++;
 
-		if(this.currentMenu.screenIdx >= curMenu.screens.length) {
-			this.currentMenu.screenIdx = 0;
-		}
+	// 	if(this.currentMenu.screenIdx >= curMenu.screens.length) {
+	// 		this.currentMenu.screenIdx = 0;
+	// 	}
 
-		let curScreen = curMenu.screens[this.currentMenu.screenIdx];
-	//	this.screen.drawMenu(curScreen.drawItems!);
-		callback(curScreen.drawItems!);
-	}
+	// 	let curScreen = curMenu.screens[this.currentMenu.screenIdx];
+	// //	this.screen.drawMenu(curScreen.drawItems!);
+	// 	callback(curScreen.drawItems!);
+	// }
 
 	triggerActionFeed(isMeal: boolean = true) {
 		this.openMenuScreen = null;
 		let hunger = this.TamaService.hungerCount.getValue();
 		if(hunger < this.TamaService.maxHunger) {
 			if (isMeal){
-				this.TamaService.increaseHunger();
-				this.TamaService.myTama.weight++;
+				this.TamaService.increaseHunger(1); // adds 1lb to weight
 				// burger animation
 				this.TamaService.updateAction("eat", "meal");
 			} else if(!isMeal) {
-				this.TamaService.increaseHunger();
-				this.TamaService.myTama.happiness++;
-				this.TamaService.myTama.weight+=2; // adds additional 1lb
+				this.TamaService.increaseHunger(2); // adds 2lb to weight
+				this.TamaService.increaseHappiness();
 				// cake animation
 
 				this.TamaService.updateAction("eat", "snack");
@@ -406,6 +455,25 @@ export class MenuService {
 	
 		// NO ...
 		// Show no animation
+	}
+
+	triggerActionLights(turnOff: boolean) {
+		// If OFF, change to either black screen or black screen with Zzz
+		// If ON, turn screen back 'on', show tama + statuses + poo
+		this.openMenuScreen = null;
+		const isSleeping = this.TamaService.isSleepingSubject.getValue();
+		if(turnOff) {
+			let action = "lights_off";
+			if(isSleeping) action += "_zzz"
+
+			this.TamaService.updateAction("sleep", action);		
+		} else {
+			if(isSleeping) {
+				this.TamaService.updateAction("sleep", "zzz");
+			} else {
+				this.TamaService.updateAction("default");
+			}
+		}
 	}
 }
 

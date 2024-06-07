@@ -16,3 +16,7 @@ export function getNewFrameLimit() {
 export function clearCanvas(ctx: CanvasRenderingContext2D | null) {
   ctx?.clearRect(0, 0, CANVAS_SIZE.WIDTH, CANVAS_SIZE.HEIGHT);
 }
+
+export function delay(ms: number) {
+  return new Promise(res => setTimeout(res, ms));
+}

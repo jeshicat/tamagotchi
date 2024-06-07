@@ -102,6 +102,16 @@ const untypedData = JSON.parse(`{
 				"frames_status": [{"x": 660, "y": 0},{"x": 725, "y": 0}],
 				"drift": false
 			},
+			"lights_off" : {
+				"frames": [{"x" : 264, "y": 1012}],
+				"frames_status": [{"x": 660, "y": 0},{"x": 725, "y": 0}],
+				"drift": false
+			},
+			"lights_off_zzz" : {
+				"frames": [{"x" : 264, "y": 1012}],
+				"frames_status": [{"x": 660, "y": 0},{"x": 725, "y": 0}],
+				"drift": false
+			},
 			"sick" :  {
 				"frames": [{"x" : 264, "y": 1012}, {"x" : 132, "y": 1012}],
 				"drift": false
@@ -208,9 +218,44 @@ const untypedCompanionData = JSON.parse(`{
 	"sick": {
 		"spriteWidth": 64,
 		"spriteHeight": 64,
+		"destWidth": 32,
+		"destHeight": 32,
 		"destX" : ${SCREEN_RIGHT},
 		"destY" : ${80},
 		"frames": [{"x": 595, "y": 0}, {"x" : 400, "y": 0}],
+		"isLeft": false,
+		"doesFall": false
+	},
+	"zzz": {
+		"spriteWidth": 64,
+		"spriteHeight": 64,
+		"destWidth": 32,
+		"destHeight": 32,
+		"destX" : ${((SCREEN_SIZE.WIDTH / 2) + 25)},
+		"destY" : ${(SCREEN_SIZE.HEIGHT/2) - 25},
+		"frames": [{"x": 662, "y": 0}, {"x" : 725, "y": 0}],
+		"isLeft": false,
+		"doesFall": false
+	},
+	"lights_off": {
+		"spriteWidth": 256,
+		"spriteHeight": 128,
+		"destWidth": 256,
+		"destHeight": 128,
+		"destX" : 0,
+		"destY" : 0,
+		"frames": [{"x":793 , "y": 472}],
+		"isLeft": false,
+		"doesFall": false
+	},
+	"lights_off_zzz": {
+		"spriteWidth": 256,
+		"spriteHeight": 128,
+		"destWidth": 256,
+		"destHeight": 128,
+		"destX" : 0,
+		"destY" : 0,
+		"frames": [{"x": 2, "y": 600}, {"x": 265, "y": 600}],
 		"isLeft": false,
 		"doesFall": false
 	}

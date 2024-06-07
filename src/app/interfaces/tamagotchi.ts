@@ -20,8 +20,9 @@ export interface Tamagotchi {
     id: number,
     stage: string,
     name: string,
-    sprite: string,
-    evolutions?: EvolveConditions[]
+    sleepTime: number,
+    wakeTime: number,
+    evolutions: EvolveConditions[]
 }
 
 export interface SpriteCoordinates {

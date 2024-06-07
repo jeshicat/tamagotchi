@@ -27,16 +27,13 @@ export class ScreenComponent implements OnInit {
 
 	animRequestIDs: number[] = [];
 
-	// TODO CHANGE TO USE SERVICE CLASS
-	tName = "shirobabytchi";
-
 	currentFrame = 0;
 	framesDrawn = 0; // records # of times the 'animate' function has been called
 	frameLimit = 60; // frame limit should be 30, 60 or 90
 	
 	// Variables used for x axis movement of sprite
 	movesFrameDrawn = 0;
-	destX = SCREEN_SIZE.WIDTH/2;
+	destX = SCREEN_SIZE.WIDTH/3;
 
 	status_currentFrame = 0; // "status" frame counter
 
@@ -63,9 +60,9 @@ export class ScreenComponent implements OnInit {
 		this.TamaService.actionSubject.subscribe({next: (e) => {
 
 			this.cancelAnimations()
+			this.destX = SCREEN_SIZE.WIDTH/3;
 
-			if(e.main === "" ) return
-			
+			if(e.main === "") return
 			this.action = e.main;
 			if(e.main === "default") { 
 				this.action_companions = e.status;
@@ -73,11 +70,11 @@ export class ScreenComponent implements OnInit {
 				this.action_companions = e.add_ons;
 			}
 
-			if(e.main !== "" && this.ctx === null) {
+			if(this.ctx === null) {
 				this.initContext()
 			}
 
-			console.log("action subscribe")
+			console.log("action " + this.action + ":" + this.action_companions)
 			this.drawScreenAnimation()
 		}}) // end of action subscribe
 	} // end of OnInit
@@ -89,7 +86,7 @@ export class ScreenComponent implements OnInit {
 	animate() {
 		clearCanvas(this.ctx);
 
-		const spriteData = spriteMap[this.tName]
+		const spriteData = spriteMap[this.TamaService.getTamagotchiName()]
 		const animation = spriteData.actions[this.action];
 
 		this.currentFrame = this.currentFrame % animation.frames.length;
